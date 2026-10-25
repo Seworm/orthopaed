@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orthopaedic Surgery Board Review & MCQ Hub</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#0284c7',
+                            600: '#0265d6',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.5); border-radius: 3px; }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-full flex flex-col transition-colors duration-200">
+
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-30 bg-white/90 dark:bg-slate-800/90 backdrop-blur border-b border-slate-200 dark:border-slate-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-brand-600 text-white rounded-xl shadow-md">
+                    <i data-lucide="bone" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight text-slate-900 dark:text-white">OrthoPrep MCQ</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">Orthopaedic Surgery Questions & Explanations</p>
+                </div>
+            </div>
+
+            <!-- Global Action Controls -->
+            <div class="flex items-center gap-2 sm:gap-4">
+                <button id="themeToggleBtn" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-400 transition-colors" title="Toggle Light/Dark Theme">
+                    <i data-lucide="moon" id="themeIcon" class="w-5 h-5"></i>
+                </button>
+                <button id="resetAppBtn" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-lg hover:bg-rose-100 dark:hover:bg-rose-900/40 transition">
+                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                    <span>Reset Progress</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Sidebar / Navigation Panel -->
+        <aside class="lg:col-span-4 xl:col-span-3 flex flex-col gap-4">
+            
+            <!-- Chapter Selection Switcher -->
+            <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Select Chapter</label>
+                <div class="grid grid-cols-2 gap-2 p-1 bg-slate-100 dark:bg-slate-900 rounded-xl">
+                    <button id="chap53Btn" class="chap-tab-btn py-2 px-3 text-xs font-semibold rounded-lg transition text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                        Ch. 53 (100)
+                    </button>
+                    <button id="chap54Btn" class="chap-tab-btn py-2 px-3 text-xs font-semibold rounded-lg transition text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                        Ch. 54 (150)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Performance Overview Card -->
+            <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Chapter Performance</span>
+                    <span id="scorePercentBadge" class="text-xs font-extrabold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-brand-600 dark:text-brand-400">0%</span>
+                </div>
+                <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5 mb-4 overflow-hidden">
+                    <div id="scoreProgressBar" class="bg-brand-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+                <div class="grid grid-cols-3 text-center gap-2">
+                    <div class="p-2 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-700">
+                        <span class="block text-xs text-slate-400 font-medium">Answered</span>
+                        <span id="statAnswered" class="text-sm font-bold text-slate-700 dark:text-slate-200">0/100</span>
+                    </div>
+                    <div class="p-2 bg-emerald-50 dark:bg-emerald-950/30 rounded-xl border border-emerald-100 dark:border-emerald-900/40">
+                        <span class="block text-xs text-emerald-600 dark:text-emerald-400 font-medium">Correct</span>
+                        <span id="statCorrect" class="text-sm font-bold text-emerald-600 dark:text-emerald-400">0</span>
+                    </div>
+                    <div class="p-2 bg-rose-50 dark:bg-rose-950/30 rounded-xl border border-rose-100 dark:border-rose-900/40">
+                        <span class="block text-xs text-rose-600 dark:text-rose-400 font-medium">Incorrect</span>
+                        <span id="statIncorrect" class="text-sm font-bold text-rose-600 dark:text-rose-400">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters & Search Panel -->
+            <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col gap-3">
+                <div class="relative">
+                    <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="searchInput" placeholder="Search keywords or Q#..." class="w-full pl-9 pr-3 py-2 text-xs rounded-xl bg-slate-100 dark:bg-slate-900 border-none text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-brand-500 outline-none">
+                </div>
+
+                <!-- Status Filter Pills -->
+                <div class="flex flex-wrap gap-1.5">
+                    <button data-filter="all" class="filter-pill px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-brand-50 dark:hover:bg-slate-600">All</button>
+                    <button data-filter="unanswered" class="filter-pill px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-brand-50 dark:hover:bg-slate-600">Unanswered</button>
+                    <button data-filter="correct" class="filter-pill px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-brand-50 dark:hover:bg-slate-600">Correct</button>
+                    <button data-filter="incorrect" class="filter-pill px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-brand-50 dark:hover:bg-slate-600">Incorrect</button>
+                </div>
+            </div>
+
+            <!-- Question Grid Matrix -->
+            <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 flex-1 flex flex-col">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Question Matrix</span>
+                    <span id="gridCountDisplay" class="text-xs font-semibold text-slate-500">100 items</span>
+                </div>
+                <div id="questionGrid" class="grid grid-cols-5 sm:grid-cols-8 lg:grid-cols-5 xl:grid-cols-6 gap-1.5 max-h-60 lg:max-h-80 overflow-y-auto custom-scrollbar p-1">
+                    <!-- Dynamic Matrix Buttons -->
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Workspace / MCQ Card Area -->
+        <main class="lg:col-span-8 xl:col-span-9 flex flex-col gap-4">
+            
+            <!-- MCQ Presentation Card -->
+            <div id="mcqContainer" class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 flex flex-col justify-between min-h-[500px]">
+                <!-- Interactive content populated via JS -->
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Comprehensive Question Dataset (100 in Ch53, 150 in Ch54)
+        const RAW_DATA_CH53 = [
+            { id: 1, text: "Which of the following is/are TRUE of fractures", options: ["A multi-fragmented fracture is one in which there are more than one fracture at different sites in the same bone.", "An oblique fracture results from compression forces acting on the cortex", "An impacted fracture is one in which the fractured ends are interlocked and is caused by a compression forces", "A greenstick fracture is one in which both cortices bend", "A stress fracture is caused by repeated applications of a load below the ultimate strength of the bone"], correct: ["B", "E"], exp: "Oblique fractures occur due to compressive or torsional loads across the bone shaft. Stress fractures result from repetitive micro-damage under loads lower than maximum mechanical breaking strength." },
+            { id: 2, text: "In the healing of a fracture", options: ["Bleeding from the fracture site and soft tissues forms a haematoma and fibrin clot that is a source of haemopoietic cells which can secrete growth factors GF", "Non-steroidal anti-inflammatory drugs (NSAIDs) enhances the healing of a fracture", "The reparative response occurs between 2days and 2 weeks", "Ultrasound can decrease the time to clinical healing and radiological union", "Remodeling is completed in a year"], correct: ["A", "C", "D"], exp: "Fracture hematoma triggers early osteoinductive growth factor cascades. The primary reparative phase runs between 2 days and 2 weeks. Low-intensity pulsed ultrasound (LIPUS) accelerates union." },
+            { id: 3, text: "The time taken for a fracture to unite:", options: ["In an adult upper limb is about 6 weeks", "In an adult lower limb is about 18 weeks", "In a lower limb in a child is about 12 weeks", "In an upper limb in a child is about 3 weeks", "Is shorter in a transverse fracture than in an oblique fracture"], correct: ["A", "D"], exp: "Standard fracture union rules of thumb (Perkins' rule): Upper limb in adults ~6 weeks; Children heal in half the time (Upper limb ~3 weeks). Oblique fractures unite faster than transverse ones due to larger surface area contact." },
+            { id: 4, text: "In the healing of a fracture", options: ["Callus becomes radiologically visible after 3 weeks", "External bridging callus ossifies by endochondral ossification to form woven bone", "Infection of the fracture site leads to low oxygen tension which will cause excessive formation of cartilage and fibrous tissue", "Callus formed will remain a permanent part of the bone", "Cancellous bone heals poorly compared to dense cortical bone"], correct: ["A", "B", "C"], exp: "Radiological soft-to-hard callus visualization begins around 3 weeks. Periosteal soft callus transforms via endochondral ossification into woven bone. Hypoxia from infection impairs direct osteogenesis, inducing fibrous tissue." },
+            { id: 5, text: "Open reduction and internal fixation of a fracture:", options: ["Should be done ideally 4-7 days after injury", "Allows early mobilization of muscles and joints thereby preventing wasting of muscles and stiffness of joints", "Reduces the incidence of deep venous thrombosis", "Promotes early healing of the fracture", "Should be delayed until other life threatening injuries have been treated"], correct: ["A", "B", "C", "E"], exp: "ORIF facilitates immediate rigid stabilization and early limb joint mobilization, preventing stiffness, atrophy, and reducing DVT risk. In polytrauma, life-threatening instability takes precedence (Damage Control Orthopaedics)." },
+            { id: 6, text: "The following are causes of delayed union of a fracture:", options: ["Poor blood supply to the fracture as a result of excessive soft tissue stripping", "Excessive mobility at the fracture site", "Early mobilization of joints and muscle at the fracture site", "Distraction of the fracture ends by excessive traction", "Large doses of Vit. A"], correct: ["A", "B", "D"], exp: "Preservation of periosteal blood supply, strain control, and bone end contact are essential for timely union. Distraction and mechanical instability delay callus bridge formation." },
+            { id: 7, text: "In non-union of a fracture:", options: ["Clinically presents as painful movement at the fracture site", "There is a gap between the fracture fragments, which may be considerable and is pathologically filled with cartilage.", "Bone growth may be stimulated with autogenous bone graft at the fracture site.", "The cause maybe inadequate blood supply to the fracture.", "A spiral fracture has a higher risk of non-union than a transverse fracture"], correct: ["B", "C", "D"], exp: "Non-union pathologically features fibrous or cartilaginous pseudarthrosis. Autologous cancellous bone grafting provides osteogenesis, osteoinduction, and osteoconduction." },
+            { id: 8, text: "The most serious complication of an open fracture is:", options: ["Haemorrhage", "Infection", "Delayed union", "Non-union", "Ischaemic contracture of muscles"], correct: ["B"], exp: "Infection (osteomyelitis) is the hallmark severe complication of open fractures due to direct bacterial inoculation and devitalized tissue." },
+            { id: 9, text: "The following are indications for open reduction and internal fixation of fractures", options: ["Pathological fractures", "Multiple fractures", "Open fractures with severe contamination", "Fractures of the patella", "Fractures complicated by compartment syndrome"], correct: ["A", "B", "D"], exp: "Indications for ORIF include displaced intra-articular fractures (patella), pathological fractures needing rigid stabilization, and polytrauma/multiple fractures." },
+            { id: 10, text: "Three days after sustaining a fracture of the shaft of the femur, a 50-year old man becomes confused, dyspnoeic and has a low-grade fever. Some petechial rashes are observed. You will suspect most strongly:", options: ["Lobar pneumonia", "Septicaemia", "Pulmonary embolism", "Fat embolism", "Cerebrovascular accident"], correct: ["D"], exp: "The classic triad of Fat Embolism Syndrome (FES) following long bone fractures consists of hypoxemia/dyspnea, neurological changes (confusion), and petechial rash." },
+            { id: 11, text: "What the patient needs most is:", options: ["Antibiotics", "Oxygen", "Heparin", "Sedation", "To be left alone"], correct: ["B"], exp: "Supportive care with high-flow oxygen therapy to correct hypoxemia is the primary cornerstone of managing Fat Embolism Syndrome." },
+            { id: 12, text: "X-ray appearance of a sclerotic, smooth and well-defined fracture margins is evidence of:", options: ["Callus", "Delayed union", "Union", "Non-union", "Avascular necrosis"], correct: ["D"], exp: "Sclerotic, rounded, smooth margins with closure of the medullary canal are definitive radiological signatures of established non-union." },
+            { id: 13, text: "Fracture of the clavicle:", options: ["Occurs most commonly in the middle third and usually as a result of direct violence", "If in the middle third, the medial fragment is pulled upward and backward and the lateral fragment downward and forward", "Causes the patient to tilt his head to the contralateral side", "Is best treated with a 'figure-of-eight' bandage which is re-applied every other day and retained for six weeks", "Is commonly complicated by non-unions and mal-unions."], correct: ["B"], exp: "In midshaft clavicle fractures, sternocleidomastoid elevates the proximal fragment, while gravity and pectoralis major pull the distal fragment down and medially." },
+            { id: 14, text: "Fractures of the scapula:", options: ["Are caused by direct violence", "Are usually associated with fractures of the underlying ribs", "Seldom cause severe displacement of the fragments", "Are best treated by the use of a sling for 3 weeks followed by active mobilization exercises.", "The best treatment is open reduction and internal fixation with plates and screws"], correct: ["A", "B", "C", "D"], exp: "Scapular fractures require high-energy direct trauma, frequently coinciding with rib fractures. Due to thick surrounding muscle envelopes, non-operative treatment with a sling yields good function." },
+            { id: 15, text: "Acromio-clavicular joint dislocations:", options: ["Is commonly caused by a fall or blow on the tip of the shoulder", "Is common among horse riders and car drivers", "Causes downward displacement of the clavicle and upward displacement of the acromion", "X-rays should be taken with the patient standing", "Is best treated by the use of a sling even when displacement is considerable."], correct: ["A", "D"], exp: "AC joint disruption results from direct forces to the top of the acromion. Stress/standing radiographs (often weight-bearing) assess displacement severity." },
+            { id: 16, text: "The shoulder joint is:", options: ["Held together by a strong but thin capsular ligament which is lax superiorly", "Strengthened anteriorly by the subscapularis tendon", "Strengthened inferiorly by the infraspinatus tendon", "Strengthened superiorly by the supraspinatus tendon", "Weakest in the superior aspect"], correct: ["B", "D"], exp: "The rotator cuff reinforces the Glenohumeral joint: Subscapularis anteriorly, Supraspinatus superiorly, Infraspinatus/Teres minor posteriorly. Inferiorly, the capsule lacks musculotendinous reinforcement." },
+            { id: 17, text: "The Bankart lesion is:", options: ["Fracture dislocation of the shoulder joint", "A tear in the capsule of the shoulder", "Detachment of the capsule of the shoulder joint from the scapula usually with the glenoid labrum", "A tear in the capsule of the shoulder joint and rotator cuff muscle tendons", "Detachment of the capsule of the shoulder joint from the humerus"], correct: ["C"], exp: "A Bankart lesion is avulsion of the anterior-inferior glenoid labrum along with the capsular attachment from the glenoid rim during anterior dislocation." },
+            { id: 18, text: "A 40-year old man after falling on the outstretched hand has severe pain and tenderness in the right shoulder and supports the right elbow with the left hand. The right arm is found to be abducted and the tip of the shoulder flat. The most likely clinical diagnosis is:", options: ["Acromio-clavicular dislocation", "Posterior dislocation of the shoulder", "Fracture of the surgical neck of the humerus", "Anterior dislocation of the shoulder", "Fracture of posterior half of the head of the humerus"], correct: ["D"], exp: "Loss of normal rounded shoulder contour ('flattened shoulder'), holding the arm in slight abduction, following fall on outstretched hand points to Anterior Shoulder Dislocation." },
+            { id: 19, text: "The lesion which is commonly associated with this injury is damage to the:", options: ["Median nerve", "Ulnar nerve", "Radial nerve", "Axillary nerve", "Brachial artery"], correct: ["D"], exp: "The axillary nerve winds around the surgical neck of the humerus in close proximity to the inferior glenoid, rendering it highly vulnerable in anterior dislocations." },
+            { id: 20, text: "Complications of anterior dislocation of the head of the humerus include:", options: ["Injury of the axillary artery", "Injury to the supraspinatus and other rotator cuff muscle", "Fractures of the greater tuberosity", "Recurrent dislocations of the shoulder", "Injury to the pectoralis major"], correct: ["A", "B", "C", "D"], exp: "Anterior glenohumeral dislocation can cause axillary neurovascular injuries, rotator cuff tears, greater tuberosity avulsion fractures, and chronic instability." },
+            { id: 21, text: "The pathological findings in recurrent dislocations of the shoulder include", options: ["Tear of the supraspinatus", "Postero-lateral notch in the humeral head", "Detachment of the glenoid labrum and capsule from the scapular neck", "Anterior pouch of the capsule under the coracoid process", "Laxity of the infraspinatus muscle"], correct: ["B", "C", "D"], exp: "Recurrent instability features Hill-Sachs lesions (posterolateral compression notch on humeral head), Bankart lesions (labral detachment), and anterior capsular laxity." },
+            { id: 22, text: "In Kocher's manoeuver for reducing anterior dislocation of the shoulder:", options: ["The patient is placed supine on the couch", "The elbow is extended and a gentle traction applied on the arm while it is externally rotated fully", "The arm is then adducted sweeping the elbow across the body to the midline", "The arm is then internally rotated so that the hand falls near the opposite shoulder", "A collar and cuff sling is then applied"], correct: ["A", "C", "D"], exp: "Kocher's technique sequence (flexed elbow): Traction -> External rotation -> Adduction across chest -> Internal rotation onto opposite shoulder." },
+            { id: 23, text: "The Bankart's operation is used for:", options: ["Luxatio erecta", "Posterior dislocation of the shoulder", "Fracture dislocation of the shoulder", "Fracture of the tuberosity of the humerus", "Recurrent dislocation of the shoulder"], correct: ["E"], exp: "Bankart repair reattaches the torn glenoid labrum and anterior capsule back to the anterior glenoid rim to restore stability in recurrent anterior shoulder dislocations." },
+            { id: 24, text: "In a tear of the supraspinatus tendon, the typical feature is:", options: ["Tenderness over the shoulder", "Stiffness of the shoulder", "Inability to initiate abduction, but when abduction is passively initiated the patient is able to continue", "Inability to adduct the shoulder", "Palpable defect in the supraspinatus tendon"], correct: ["C"], exp: "Supraspinatus initiates early shoulder abduction (0-15°). When torn, patients cannot initiate abduction actively, but deltoid takes over once elevated passively past 15-30°." },
+            { id: 25, text: "In the treatment of fractures of the surgical neck of the humerus", options: ["If the fracture is impacted, the arm is put in a sling and daily active assisted movements started", "If the fracture is impacted and the displacement is minimal, the arm is put in a plaster-of-Paris U-slab and strapped to the body for 3 weeks after which active assisted movements are started", "If displacement is severe, manipulation is done and the arm held in plaster-of-Paris shoulder Spica for 6 weeks.", "If there is associated dislocation of the head, open reduction is often necessary", "If the axillary nerve is injured, exploration and open reduction are urgent"], correct: ["A", "D"], exp: "Impacted proximal humerus fractures heal reliably with early sling support and prompt range-of-motion exercises. Fracture-dislocations usually necessitate open reduction." },
+            { id: 26, text: "If a patient suspected of having fracture of the shaft of the right humerus is unable to extend the wrist and fingers, you will:", options: ["Suspect an associated fracture of the shafts of the radius and ulna", "Suspect associated injuries of the radial and ulnar nerves", "Suspect associated injury of the radial nerve", "Explore any nerve suspected to be injured and perform an open reduction of the fracture", "Treat the fracture by closed methods and splint the wrist and fingers in a position of function"], correct: ["C"], exp: "Wrist drop (inability to extend wrist and MCP joints) is classic for radial nerve palsy associated with mid-to-distal shaft humerus fractures (Holstein-Lewis lesion)." },
+            { id: 27, text: "A child of 6 after falling on the outstretched hands has a painful tender swelling of the right elbow. You will:", options: ["Suspect MOST strongly separation of the medial epicondyle or dislocation of the elbow", "Check the radial pulse", "Examine for radial nerve injury", "Check the patient's ability to move the fingers", "Test for anaesthesia of the median and ulnar nerve distribution"], correct: ["B", "D", "E"], exp: "In paediatric elbow injuries (supracondylar fractures), immediate neurovascular assessment—checking radial pulse, capillary refill, and motor/sensory function of median, radial, and ulnar nerves—is vital." },
+            { id: 28, text: "A girl of 6 who fell on the outstretched right hand presents with painful swelling of the elbow. She is unable to move the joint. The medial and lateral epicondyles and the point of the olecranon are normally related to each other. The most likely clinical diagnosis is:", options: ["Dislocation of the elbow", "Supracondylar fracture", "Fracture of the neck of the radius", "Fracture of the olecranon process", "Separation of the lateral condyle"], correct: ["B"], exp: "In supracondylar fractures, the distal humerus is broken above the condyles, leaving the triangular anatomic relationship of epicondyles and olecranon preserved (unlike elbow dislocation)." },
+            { id: 29, text: "Your next step will be to:", options: ["Take an x-ray to confirm your diagnosis", "Examine the forearm for any neurological disorder", "Check the radial pulse", "Examine the shoulder for any lesion", "Check the brachial pulse"], correct: ["C"], exp: "Assessing distal vascular status by feeling the radial pulse is the most critical immediate physical examination priority in elbow injuries to rule out ischemia." },
+            { id: 30, text: "After correcting the injury and immobilizing the arm, your next most important step will be to:", options: ["Do a check x-ray", "Examine the hand for swelling", "Check the radial pulse", "Check the brachial pulse", "Check for any neurological lesion"], correct: ["C"], exp: "Post-reduction verification of distal pulse (radial pulse) ensures that reduction or splintage has not compromised or entrapped the brachial artery." },
+            { id: 31, text: "In a supracondylar fracture:", options: ["The lower fragment in 90% of patients is displaced backwards and upwards and may be rotated medially", "The brachial artery may uncommonly be injured and requires treatment within 6 hours of the injury", "Stiffness of the elbow is common and is treated by forced extension, passive movements and active exercises", "Mal-union is common and usually requires open reduction", "The median nerve is commonly injured"], correct: ["A", "B"], exp: "Extension-type supracondylar fractures (90%) exhibit posterior displacement. The anteriorly tented proximal fragment can compress or transect the brachial artery." },
+            { id: 32, text: "In Volkmann's ischaemic contracture of the forearm:", options: ["The most common cause is supracondylar fractures of the humerus, but fractures of the shafts of the radius and ulna may also be a cause.", "The forearm muscles are fibrosed and contracted", "The fingers are stiff, contracted and clawed", "There is no loss of skin sensation", "Operative treatment is not necessary in most patients"], correct: ["A", "B", "C"], exp: "Volkmann contracture follows unmanaged compartment syndrome (often after supracondylar fractures), leading to muscular necrosis, fibrosis, joint flexion contractures, and neurological deficits." },
+            { id: 33, text: "Myositis ossificans of the elbow:", options: ["Is a common complication of supracondylar fractures", "Presents as increasing immobility of the elbow a few weeks afer injury", "Gives rise to a painful and very stiff elbow", "Is treated by stretching of the elbow followed by passive and active movements", "Is best diagnosed by ultrasound imaging"], correct: ["A", "B", "C"], exp: "Heterotopic bone formation in periarticular soft tissues causes progressive stiffness and pain; passive stretching exacerbates inflammation and is strictly contraindicated." },
+            { id: 34, text: "Fractures of the lateral condyle of the humerus:", options: ["Is common in adults and occasionally seen in children", "Is caused by direct violence on the elbow", "May lead to cubitus valgus and ulnar neuritis", "Usually requires open reduction for accurate reduction which is important", "Is often complicated by ulnar nerve injury"], correct: ["C", "D"], exp: "Lateral condyle fractures are paediatric intra-articular injuries requiring precise anatomical reduction. Mal-union/non-union leads to progressive cubitus valgus and tardy ulnar nerve palsy." },
+            { id: 35, text: "A 20-year old man falls on the outstretched right arm. He complains of pain around the elbow and it is found that the olecranon is unusually prominent. The line from the medial epicondyle through the tip of the olecranon to the lateral epicondyle is angulated. The most likely clinical diagnosis is:", options: ["Supracondylar fracture", "Fracture of the olecranon process", "Dislocation of the elbow", "Monteggia fracture dislocation", "Fracture of the head of the radius"], correct: ["C"], exp: "Distortion of the classic equilateral triangle formed by epicondyles and olecranon tip confirms elbow dislocation (distal articular surfaces disrupted relative to humerus)." },
+            { id: 36, text: "In dislocation of the elbow:", options: ["The cause is usually direct violence to the elbow", "The radius and ulna are displaced forward in relation to the condyles of the humerus", "The line from the medial epicondyle through the tip of the olecranon to the lateral epicondyle is straight", "A back slab is applied for 6 weeks after reduction", "Recurrence may be due to associated fracture of the coronoid process"], correct: ["E"], exp: "The coronoid process serves as an essential anterior bony buttress; its fracture destabilizes the elbow joint leading to recurrent instability." },
+            { id: 37, text: "In fracture of the head of radius:", options: ["There is severe pain on the lateral aspect of the elbow", "Rotation-supination movements are particularly painful", "The radial artery may be damaged", "Treatment in all patients is surgical excision of the head", "Joint stiffness and osteoarthritis are common complications."], correct: ["A", "B", "E"], exp: "Radial head fractures produce lateral elbow pain aggravated by pronation/supination. Complications include elbow stiffness and secondary radiohumeral osteoarthritis." },
+            { id: 38, text: "In fractures of the shafts of the radius and ulna:", options: ["An isolated fracture of the ulna or radius is unusual", "The entire shafts including the wrist and elbow joints should always be x-rayed", "The proximal fragments are pronated if the fractures are in the upper third", "If the fractures are below the mid-shaft, the proximal and distal fragments should be held in mid-pronation to get them in line", "Union usually occurs in the adult in 8-12 weeks"], correct: ["A", "B", "D", "E"], exp: "Forearm forearm bone injuries act as a two-bone frame; isolated fractures are uncommon without joint dislocation. Radiographs must capture both elbow and wrist joints." },
+            { id: 39, text: "Features of Colles' fracture include:", options: ["Fracture of the distal 6cm of the radius", "Dorso-lateral displacement of the distal fragment", "Dorsal rotation of the distal fragment", "Fracture of the ulna styloid", "Falling on an outstretched hand"], correct: ["B", "C", "D", "E"], exp: "Colles' fracture is an extra-articular distal radius fracture within 2.5 cm of the wrist with dorsal displacement, dorsal tilt (rotation), radial shift, and styloid avulsion." },
+            { id: 40, text: "Pain and swelling over the wrist following an injury may be due to:", options: ["Madelung's deformity", "Fracture of the radial styloid", "Fracture of the scaphoid", "Smith's fracture", "Monteggia fracture"], correct: ["B", "C", "D"], exp: "Acute traumatic wrist presentations stem from fractures of radial styloid, scaphoid, or distal radius variants like Smith's (volar displacement)." },
+            { id: 41, text: "In a Colles' fracture:", options: ["The wrist is immobilized in palmar flexion and ulnar deviation after reduction", "An above elbow plaster is usually applied especially if the fracture is comminuted", "Immobilization is usually for 3-4 weeks", "Complications include reflex sympathetic dystrophy, shoulder-hand syndrome, rupture of the extensor pollicis longus tendon and Volkmann's ischaemic contracture of the fore-arm", "Is most common in middle-aged men"], correct: ["A"], exp: "Post-reduction stabilization of Colles' fracture classically relies on casting in palmar flexion and ulnar deviation ('Colles' cast position)." },
+            { id: 42, text: "In Smith's fracture:", options: ["There is a fracture of the distal end of the radius", "The distal fragment is displaced posteriorly", "There is anterior rotation of the distal fragment", "The cause is a pronation injury produced on falling on the flexed wrist", "After reduction, an above elbow plaster is applied with the wrist in full supination and slight dorsiflexion"], correct: ["A", "C", "D", "E"], exp: "Smith's fracture ('reverse Colles') features volar/anterior displacement/tilt of the distal radius fragment, typically incurred from falling onto a flexed wrist." },
+            { id: 43, text: "A Monteggia fracture is:", options: ["Transverse fracture of the upper third of the ulna", "Transverse fractures of the upper third of the ulna and lower third of the radius", "Transverse fracture of the lower third of the ulna with dislocation of the proximal radio-ulnar joint", "Transverse fracture of the upper third of the ulna with dislocation of the proximal radio-ulnar joint", "Transverse fracture of the upper third of the radius with dislocation of the inferior radio-ulnar joint."], correct: ["D"], exp: "Monteggia lesion consists of a fracture of the proximal third of the ulna shaft accompanied by dislocation of the radial head at the proximal radioulnar joint." },
+            { id: 44, text: "A Monteggia fracture is:", options: ["Caused by a fall on the outstretched hand", "Produced by a blow on the forearm", "Markedly angulated either anteriorly or posteriorly", "Usually treated by closed manipulation and open reduction being necessary only occasionally", "If accompanied by fracture of the head of the radius in a child is treated by excision of the head of the radius and intramedullary nailing of the ulna"], correct: ["B", "C"], exp: "Direct blows to the forearm ('nightstick' defense mechanism) frequently cause Monteggia fractures with marked ulnar angulation." },
+            { id: 45, text: "A Galleazzi fracture is:", options: ["Fracture of the radius with dislocation of the proximal radio-ulnar joint", "Produced by a blow on the forearm", "Treated by open reduction and plating", "Treated by closed manipulation", "Mobilized by a below-elbow plaster"], correct: ["B", "C"], exp: "Galeazzi fracture-dislocation comprises a fracture of the distal shaft of the radius with disruption of the distal radioulnar joint (DRUJ); rigid anatomical plate fixation is mandatory in adults." },
+            { id: 46, text: "Fractures of the scaphoid:", options: ["Is produced by a direct blow on the carpus", "Typically causes pain and tenderness in the anatomical snuff box", "Is not always evident on x-ray", "May be complicated by avascular necrosis and osteoarthritis", "Is immobilized in a below-elbow plaster with the thumb in full internal rotation and the plaster extended to the metacarpo-phalangeal joint"], correct: ["B", "C", "D"], exp: "Scaphoid waist fractures present with anatomic snuffbox tenderness. Initial X-rays can miss non-displaced fractures. Retrograde blood supply risks avascular necrosis (AVN) of proximal pole." },
+            { id: 47, text: "Kienbock's disease:", options: ["Is an insidious avascular necrosis of the scaphoid", "May be associated with trauma", "Causes paraesthesia of the hand", "Is usually seen in young adults", "Is usually seen in children"], correct: ["B", "D"], exp: "Kienböck's disease is osteonecrosis/avascular necrosis of the lunate carpal bone, typically affecting young adults (ages 20-40) often associated with repetitive microtrauma." },
+            { id: 48, text: "Bennett's fracture:", options: ["Is a fracture-dislocation of the first metacarpal through the carpometacarpal joint", "Has the metacarpal displaced anteriorly and proximally on the carpal bone", "Is stable because the collateral ligament is not ruptured", "Is easy to reduce by manipulation but the reduction is difficult to maintain", "May necessitate arthrodesis"], correct: ["A", "D", "E"], exp: "Bennett's fracture is an intra-articular fracture-dislocation of the base of 1st metacarpal. Abductor pollicis longus pulls the main shaft proximally and dorsally, making unstable maintenance tricky." },
+            { id: 49, text: "A rolled bandage held in the palm of the hand and held by a crepe bandage is used to immobilize:", options: ["Fractures of the phalanges", "Fractures of the metacarpals", "Fracture of the lunate", "Dislocation of the carpo-metacarpal joint", "Dislocation of the metacarpo-phalangeal joint"], correct: ["B"], exp: "Immobilizing metacarpal shaft fractures can be performed with functional ball-bandage flexed hand splinting to maintain palmar arch concavity." },
+            { id: 50, text: "An x-ray shows a fracture of the shaft of the ulna, you will:", options: ["Reduce the fracture and apply a plaster of Paris cast", "Perform an open reduction and internal fixation", "Request an x-ray of the elbow to show the proximal radio-ulnar joint", "Request an x-ray of the wrist", "Request an x-ray of the whole shaft including the elbow and wrist joints"], correct: ["E"], exp: "Single forearm bone fractures are notorious for masking dislocation of adjacent joints (Monteggia/Galeazzi); full length radiographs including wrist and elbow are required." },
+            { id: 51, text: "Which of the following is true of fractures of the phalanges?", options: ["The distal phalanx is fractured more commonly than the proximal and middle phalanges", "The deformity in the shaft fractures of the proximal phalanx is flexion of the proximal fragment from the pull of the interossei and the lumbricals", "Fractures of the middle phalanx are usually not displaced", "Undisplaced fractures of the proximal phalanx are immobilized in a plaster of Paris from the wrist to the tip of the finger", "Displaced fractures of the middle or proximal phalanx are reduced by traction and flexion of the finger over a roll of cotton gauze and held down by cotton gauze"], correct: ["B", "C", "E"], exp: "Interosseous muscles flex the proximal fragment of proximal phalanx fractures. Flexion over a palmar roll maintains functional reduction." },
+            { id: 52, text: "In mallet finger:", options: ["The terminal phalanx is held in flexion deformity", "The terminal phalanx cannot be flexed", "The flexor tendon avulses a portion of the terminal phalanx at its insertion", "The finger is immobilized in a splint with the proximal interphalangeal joint flexed and the distal interphalangeal joint hyperextended for 3 weeks", "If a large portion is avulsed then operative excision is necessary"], correct: ["A", "D"], exp: "Mallet finger results from extensor tendon disruption at DIP joint causing flexed resting posture. Continuous hyperextension splinting of DIP joint for 6-8 weeks is standard." },
+            { id: 53, text: "A patient is suspected of having a fracture of the scaphoid. X-ray is negative. You will:", options: ["Leave the patient alone", "Apply strapping of the wrist for 3 weeks", "Apply a scaphoid plaster for 2 weeks and repeat the x-ray", "Apply a splint to the wrist and repeat the x-ray after 2 weeks", "Apply a scaphoid plaster for 8 weeks"], correct: ["C"], exp: "Clinical suspicion of scaphoid fracture with initial negative X-rays warrants scaphoid cast immobilization and repeat radiographs in 10-14 days when resorption reveals the fracture line." },
+            { id: 54, text: "Falling on the outstretched hand may result in:", options: ["Fracture of the scaphoid", "Dislocation of the lunate", "Fracture of the radial head", "Smith's fracture", "Monteggia fracture"], correct: ["A", "C"], exp: "FOOSH (fall on outstretched hand) classic injuries include scaphoid fractures, radial head fractures, and Colles' fractures." },
+            { id: 55, text: "Falling on the outstretched hand may result in fracture of the:", options: ["Clavicle", "Shaft of the humerus", "Surgical neck of the humerus", "Oleranon", "Shafts of the radius and ulna"], correct: ["A", "C", "E"], exp: "Axial transmission of impact force from FOOSH travels up the kinetic chain causing fractures of distal radius/ulna, surgical neck of humerus, or clavicle." },
+            { id: 56, text: "A man of 25 standing with his face to a wall is squashed from behind by a reversing car. He complains of severe pain around the pelvis and is unable to stand. His pulse is 100bpm, regular and of moderate volume and the blood pressure is 100/60mmHg. The most likely clinical diagnosis is:", options: ["A vertical fracture of the pubic ramus and ischium on one side", "Hinge-separation of the symphysis pubis", "A vertical fracture of the pubis and ischium and a vertical fracture of the ilium all on both sides", "A vertical fracture of the pubic ramus and ischium on both sides", "A vertical fracture of the pubic ramus and ischium and hinge separation of the symphysis"], correct: ["B"], exp: "Anteroposterior compression (APC) pelvic injury secondary to crush mechanisms leads to open book separation of the pubic symphysis hinged on posterior sacroiliac structures." },
+            { id: 57, text: "Which of the following complications may occur?", options: ["Sciatic nerve palsy", "Rupture of the bladder", "Perforation of the stomach", "Paralytic ileus", "Rupture of the urethra"], correct: ["B", "D", "E"], exp: "Pelvic ring disruptions are frequently complicated by lower urinary tract lesions (membranous urethral or bladder rupture) and retroperitoneal hematoma leading to paralytic ileus." },
+            { id: 58, text: "After confirming the diagnosis by x-ray you will:", options: ["Apply a short hip spica", "Apply a full hip spica", "Leave the patient free in bed and encourage active moments of the spine and hips", "Put the pelvis in a Bryant pelvic sling and suspend it from an overhead beam", "Apply skeletal traction through the tibia"], correct: ["C"], exp: "Isolated stable pubic symphysis diastasis without mechanical pelvic ring instability can be managed conservatively with bed rest and early active mobilization as tolerated." },
+            { id: 59, text: "Relaxation of which of the following muscles causes shortening and displacement in intra-capsular fractures of the hip?", options: ["Gluteus maximus", "Gluteus medius", "Piriformis", "Superior gamelli", "Obturator internus"], correct: ["B"], exp: "Unopposed pull of gluteus medius and iliopsoas muscles leads to external rotation and proximal displacement (shortening) of the distal femoral shaft." },
+            { id: 60, text: "A 30-year old woman in the front seat of a car injures her right hip following an accident involving the car. The right leg is shortened, internally rotated, flexed and adducted. The most likely clinical diagnosis is:", options: ["Basal fracture of the femur", "Subcapital fracture of the femur", "Posterior dislocation of the hip", "Anterior dislocation of the hip", "Central dislocation of the hip"], correct: ["C"], exp: "The classic posture of posterior hip dislocation ('dashboard injury') is flexion, adduction, internal rotation, and leg shortening." },
+            { id: 61, text: "Which of the following complications may occur?", options: ["Sciatic nerve palsy", "Osteoarthritis of the hip", "Rupture of the femoral artery", "Myositis ossificans", "Fracture of the anterior lip of the acetabulum"], correct: ["A", "B", "D"], exp: "Posterior hip dislocation risks sciatic nerve compression/traction injury, avascular necrosis leading to secondary osteoarthritis, and periarticular myositis ossificans." },
+            { id: 62, text: "In anterior dislocation of the hip:", options: ["The hip is slightly extended", "The hip is abducted", "The hip is externally rotated", "The limb appears lengthened because the head of the femur lies at a slightly lower level than the acetabulum", "The limb appears shortened and internally rotated"], correct: ["B", "C", "D"], exp: "Anterior hip dislocations present with external rotation, abduction, and apparent lengthening of the involved lower limb." },
+            { id: 63, text: "Fracture of the neck of femur:", options: ["Is most common in elderly men especially over 70", "Is aetiologically most often associated with osteoporosis", "Is usually caused by severe violence in the young and elderly", "Results in pulling of the lesser trochanter upwards and forwards by the psoas muscle", "Usually produces no deformity"], correct: ["B", "D"], exp: "Femoral neck fractures occur predominantly in osteopenic/osteoporotic elderly women. Iliopsoas pulling on the lesser trochanter causes characteristic short external rotation deformity." },
+            { id: 64, text: "A 75-year old lady stumbles and falls down. She experiences pain in the right groin and is unable to raise the leg. The leg is found on examination to be shortened and externally rotated. The clinical diagnosis may be:", options: ["Subcapital fracture of the femur", "Transcervical fracture of the femur", "Basal fracture of the femur", "Intertrochanteric fracture of the femur", "Anterior dislocation of the hip"], correct: ["A", "B", "C", "D"], exp: "All intracapsular and extracapsular proximal femoral fractures (subcapital, transcervical, basal, intertrochanteric) cause inability to weight-bear, limb shortening, and external rotation." },
+            { id: 65, text: "Avascular necrosis and/ or non-union is a problem in:", options: ["Basal fracture of the femur", "Sub trochanteric fracture of the femur", "Transcervical fracture of the femur", "Intertrochanteric fracture", "Anterior dislocation of the hip"], correct: ["C", "E"], exp: "Intracapsular femoral neck fractures (transcervical) and hip dislocations disrupt retinacular blood vessels supplied by lateral femoral circumflex artery, inducing femoral head AVN." },
+            { id: 66, text: "Non-union of fracture of the neck of the femur in an elderly woman is BEST treated by:", options: ["Full hip spica", "Hemi-arthroplasty", "Dynamic hip screw", "MacMurray's osteotomy", "Insertion of a bone graft"], correct: ["B"], exp: "In elderly patients with non-union or displaced femoral neck fractures, replacement arthroplasty (hemi-arthroplasty or THA) provides rapid weight-bearing mobilization." },
+            { id: 67, text: "In the treatment of fractures of the neck of the femur:", options: ["Transcervical fracture in patients under 70 is treated with cancellous hip screws", "Displaced Transcervical fractures in patients over 70 is best treated by a hemi-arthroplasty or by a total hip replacement", "A basal fracture is best treated by internal fixation with a dynamic hip screw", "Intertrochanteric fracture in the young is immobilized with a full hip spica", "Subcapital fractures in the young is treated by total hip replacement"], correct: ["A", "B", "C"], exp: "Head preservation with cancellous screw fixation is preferred in young patients (<70). Arthroplasty is indicated in elderly displaced cases. Extracapsular fractures use Dynamic Hip Screws (DHS)." },
+            { id: 68, text: "Avascular necrosis of the head of the femur:", options: ["Is uncommon after the Subcapital fracture of the neck", "Follows badly treated fracture of the neck of femur", "Is influenced by weight bearing forces", "Causes severe groin pain when lying down", "Radiologically has a glossy ground-glass appearance in the early stages"], correct: ["E"], exp: "Early radiological findings in osteonecrosis include subchondral radiolucency/sclerosis and ground-glass opacity prior to femoral head segmental collapse." },
+            { id: 69, text: "Avascular necrosis of the head of the femur may be treated by:", options: ["Analgesics and rest", "Physiotherapy", "Replacement of the head by a prosthesis", "Total hip replacement", "Arthrodesis of the hip"], correct: ["B", "C", "D"], exp: "Surgical reconstruction options for collapsed AVN include modular hemiarthroplasty, total hip replacement, core decompression, or joint realignment." },
+            { id: 70, text: "A car knocks down a 30-year old man. He complains of severe pain in the left thigh and is unable to raise the leg. Examination reveals deformity and swelling of the thigh with flexion, abduction and external rotation of the proximal part of the thigh. The fracture of the femur is at the:", options: ["Greater tuberosity", "Upper third", "Middle third", "Lower third", "Supracondyles"], correct: ["B"], exp: "Proximal third femoral fractures feature characteristic displacement: proximal fragment is flexed (iliopsoas), abducted (gluteus medius/minimus), and externally rotated (short rotators)." },
+            { id: 71, text: "Which of the following may occur?", options: ["Injury to the popliteal artery", "Injury to the femoral artery", "Injury to the popliteal nerves", "Injury to the sciatic nerve", "Shock"], correct: ["E"], exp: "Femoral shaft fractures routinely cause major closed internal occult blood loss (1000-1500ml), predisposing patients to hemorrhagic hypovolemic shock." },
+            { id: 72, text: "Indications for internal fixation of a fracture of the shaft of the femur include:", options: ["Old or frail patients", "Patients between 5 and 12", "Patients with multiple injuries to the lower limb", "Pathological fractures from metastasis", "Angulation of the fractured fragments"], correct: ["A", "C", "D"], exp: "Surgical stabilization (intramedullary nailing/plating) is indicated for polytrauma, pathologic lesions, and adults/elderly unable to tolerate prolonged traction immobilisation." },
+            { id: 73, text: "A Gallow's splint is used in children for treating fracture of the:", options: ["Tibia and fibula", "Supracondylar region of the femur", "Shaft of the femur", "Neck of femur", "Anterior dislocation of the hip"], correct: ["C"], exp: "Gallows overhead skin traction is utilized for pediatric femoral shaft fractures in infants and young children under 2 years of age (<15kg)." },
+            { id: 74, text: "A 25-year old man is suspected of having a supracondylar fracture of the right femur. You will:", options: ["Check the popliteal pulse", "Examine the lower leg for any lesion of the sciatic nerve", "Check the dorsalis pedis pulse", "Check the femoral pulses", "Check movement of the bones"], correct: ["C"], exp: "The distal femoral fragment in supracondylar fractures tilts posteriorly due to gastrocnemius pull, risking compression/laceration of the popliteal artery. Checking dorsalis pedis pulse verifies distal perfusion." },
+            { id: 75, text: "Supracondylar fracture of the femur is treated by:", options: ["Manipulation and application of above knee plaster", "Manipulation and application of a full hip spica", "Open reduction and fixation with a blade plate", "Open reduction and intramedullary nailing", "Weight traction on the leg by skin or skeletal traction"], correct: ["C"], exp: "Displaced supracondylar femoral fractures in adults require rigid internal fixation (e.g., fixed-angle blade plates, distal femoral locking plates, or retrograde intramedullary nails)." },
+            { id: 76, text: "In the treatment of fracture of the patella:", options: ["A comminuted fracture is best treated in a patient under 40 by immobilization of the knee in a plaster cylinder for 6 weeks and in a patient over 40yrs by patellectomy", "A transverse fracture in a patient under 40 is best treated by excision of the patella", "A transverse fracture in a patient over 40 is treated by operative reduction and fixation of the fragments with screws", "A crack fracture in a patient under 40 is best treated by aspiration of haemarthrosis and immobilization of the knee in a plaster cylinder for 6 weeks", "A crack fracture in a patient over 40 is best treated by bed rest and early mobilization"], correct: ["D"], exp: "Undisplaced/crack patellar fractures with intact extensor mechanism respond well to aspiration of hemarthrosis followed by 6 weeks of knee cylinder cast immobilization." },
+            { id: 77, text: "Which of the following disabilities of the knee may occur after excision of the patella?", options: ["Slight reduction in extension", "Some reduction in flexion", "Slight disability in climbing stairs", "Slight disability in descending stairs", "Locking of the knee"], correct: ["A", "B", "C", "D"], exp: "Patellectomy reduces the mechanical lever arm of the extensor mechanism, resulting in 15-30% loss of quadriceps power, mild range-of-motion loss, and difficulty climbing/descending stairs." },
+            { id: 78, text: "Which of the following muscles maintain the knee in the extended position during walking?", options: ["Popliteus", "Rectus femoris", "Vastus medialis", "Gracilis", "Vastus lateralis"], correct: ["B", "C", "E"], exp: "The components of Quadriceps femoris (rectus femoris, vastus medialis, vastus lateralis, vastus intermedius) maintain active knee extension during stance phase." },
+            { id: 79, text: "Which of the following is/are true of the ligaments of the knee?", options: ["The lateral collateral ligament is more commonly ruptured than the medial collateral ligament", "In rupture of the medial collateral ligament the knee is unstable on adduction", "Medial collateral ligament rupture is usually treated by applying a knee brace for 6 weeks", "The anterior cruciate ligament is ruptured by an extension force driving the tibia forwards relative to the femur", "Anterior cruciate ligament rupture is treated by surgical reconstruction"], correct: ["C", "D", "E"], exp: "MCL tears heal reliably in functional knee braces. ACL prevents anterior tibial translation; tears in young active patients require surgical autograft reconstruction." },
+            { id: 80, text: "Which of the following is/are true of tears of the menisci?", options: ["As the medial meniscus is attached to the medial collateral ligament, it is less commonly torn than the lateral meniscus", "They occur if the semi-flexed knee is twisted while weight-bearing", "In the bucket handle tear, the commonest, the tear extends into both horns and the fragment is displaced inwards", "They cause haemarthrosis", "They may heal spontaneously"], correct: ["B", "C"], exp: "Meniscal tears occur when rotational torque is applied to a weight-bearing flexed knee. Bucket-handle tears displace medially into the intercondylar notch, causing mechanical joint locking." },
+            { id: 81, text: "Clinical features of acute tears of the medial meniscus include:", options: ["Inability of the patient to straighten the knee fully after injury to the knee", "Swelling of the knee", "Wasting of the quadriceps muscle", "Attempted passive extension of the knee causes pain in the whole knee", "Appley's grinding test is positive"], correct: ["A", "B", "E"], exp: "Classic features of acute meniscus tear: Joint effusion (swelling), true mechanical locking (inability to fully extend knee), and positive Apley's compression/grinding test." },
+            { id: 82, text: "Which of the following is/are true of fracture of the lateral condyle of the tibia?", options: ["It is less common than that of the medial condyle", "Oblique shearing fractures should always be treated conservatively", "A comminuted compression fracture is treated by Hamilton Russell skin traction and knee exercises", "Depressed plateau fracture is treated by open reduction in the young", "It may lead to genu varum"], correct: ["D"], exp: "Depressed tibial plateau fractures in young active patients require open reduction, elevation of articular surface, bone grafting, and plate fixation to restore joint congruity." },
+            { id: 83, text: "Which of the following is/are true of fractures of the tibia and fibula?", options: ["Fracture of the tibia is always accompanied by the fracture of the fibula", "Oblique fractures are unstable and tend to shorten and displace in plaster even when the initial reduction is good", "Shortening may be overcome by skeletal traction using a Steinman's pin through the calcaneum", "The full-length leg plaster extends from the mid-thigh to the metatarsal heads with the knee slightly flexed at about 10° and the ankle at 90°", "It is not essential to examine the leg for circulatory impairment when the patient is first seen as pressure on blood vessels and nerves is caused by tight dressing or plaster cast"], correct: ["B", "C"], exp: "Oblique tibial fractures lack intrinsic cortical stability and prone to shortening. Calcaneal/distal tibial pin skeletal traction counteracts muscle spasm." },
+            { id: 84, text: "Indications for open reduction and internal fixation in fractures of the tibia and fibula include:", options: ["Fractures of the lower third of the tibia", "Overlap causing mal-union", "Mal-union from angulation", "Oblique fracture", "Delayed union"], correct: ["A", "B", "C"], exp: "Distal third tibial fractures have poor blood supply. Operative intervention corrects persistent angulatory deformity, shortening overlap, and articular instability." },
+            { id: 85, text: "Which of the following injuries of the ankle is/are stable?", options: ["Complete rupture of the lateral ligament", "Spiral fracture of the lateral malleolus", "Spiral fracture of the lateral malleolus with avulsion fracture of the medial malleolus (bimalleolar fracture)", "Avulsion fracture of the medial malleolus", "Spiral fracture of the lateral malleolus with avulsion fracture of the posterior part of the lower end of the tibia (tri-malleolar fracture)"], correct: ["B", "D"], exp: "Isolated unilevel malleolar injuries (isolated spiral lateral malleolus or simple avulsion medial malleolus without deltoid/syndesmotic disruption) are inherently stable." },
+            { id: 86, text: "Abduction-lateral rotation injuries of the ankle include:", options: ["Avulsion fracture of the tip of the lateral malleolus", "Anterior marginal fracture of the lower end of the tibia with anterior shift of the talus", "Avulsion fracture of the medial malleolus with spiral fracture of lateral malleolus", "Isolated shearing fracture of the medial malleolus", "Shearing fracture of the medial malleolus with transverse fracture of the lateral malleolus"], correct: ["C"], exp: "Pronation-external rotation/abduction forces produce medial tension (medial malleolus avulsion / deltoid tear) combined with spiral high lateral malleolar/fibular fracture." },
+            { id: 87, text: "A middle-aged man while playing tennis experiences a sudden pain behind the right ankle. He is unable to plantar flex the foot or support the body on the toes. The most likely injury is:", options: ["Fracture of the lower end of the tibia", "Tear of the posterior ligament of the ankle", "Rupture of the Achilles tendon", "Tear of the gastrocnemius muscle", "Tear of the tibialis posterior muscle"], correct: ["C"], exp: "Sudden 'pop' behind ankle during pushing-off in racquet sports, loss of active plantarflexion, and inability to tip-toe stand are diagnostic of acute Achilles tendon rupture." },
+            { id: 88, text: "A patient falls from a height and is found to have a fracture of the calcaneus. Which of the following may also be fractured?", options: ["Lower tibia", "Pelvis", "Lower thoracic spine", "Lumbar spine", "Basi-occiput"], correct: ["A", "B", "C", "D", "E"], exp: "High-energy axial loading (fall from height) transmits vertical impact upward through kinetic chain: Calcaneus -> Tibial plateau -> Femur/Pelvis -> Lumbar/Thoracic spine -> Skull base." },
+            { id: 89, text: "A 30-year old farmer is carrying a heavy load on her trips and the load falls backwards from the head. She may sustain:", options: ["Fracture of a spinous process of a cervical vertebra", "Fracture of the lamina of a cervical vertebra", "Fracture dislocation of the cervical spine with injury to the cord", "Wedge compression fracture of the body of a cervical vertebra", "Avulsion fracture of the anterior-inferior border of a cervical vertebra (tear drop)"], correct: ["A", "B", "C", "E"], exp: "Hyperextension forces combined with sudden backward traction can cause avulsion of spinous processes (Clay-shoveler's), pedicle/laminar fractures, tear-drop fractures, and cord injury." },
+            { id: 90, text: "In injuries of the spine:", options: ["Cord injury without radiological evidence of vertebral injury is indicative of extension-rotation injury", "Wedge compression fracture occurs in pure extension injury and is stable", "Wedge compression fracture is commonest in the thoracic region", "Contusion on the forehead suggests an extension injury", "Fracture dislocation at T12-L1 is stable"], correct: ["A", "C", "D"], exp: "SCIWORA is linked with extension-flexion injuries. Forehead contusions signify hyperextension mechanisms. Anterior wedge compression fractures predominate in the thoracic spine." },
+            { id: 91, text: "In paraplegia following spinal injury:", options: ["Normal bladder function usually returns after 3 months", "Diarrhoea often occurs", "Violent flexor and adductor spasm of the paralyzed limbs may occur", "Spirit applied daily to the skin prevents pressure sores", "There should be daily passive movements of all paralyzed joints and the unaffected upper limb muscles"], correct: ["C"], exp: "Spinal shock resolution leads to emergence of upper motor neuron spasticity, manifested by involuntary flexor/adductor spasms in paralyzed lower extremities." },
+            { id: 92, text: "A 7-year old boy is rushed into the emergency room with a swollen, painful and deformed left elbow. He had fallen off from his school desk about 3 hours ago. Concerning management:", options: ["A pulsating hematoma in the cubital fossa is a hard sign of a brachial artery injury", "A supracondylar fracture is the most likely working diagnosis", "Compartment syndrome is not a possible complication of this injury", "An on-table angiogram is indicated if the pulses are found to be diminished with a sluggish capillary refill", "Definite treatment will involve closed manipulation and application of a completed above elbow plaster of Paris cast."], correct: ["A", "B", "D"], exp: "Pulsating cubital fossa hematoma is a hard sign of vascular injury. Supracondylar fractures are the most common paediatric elbow injury. Diminished perfusion requires immediate reduction / angiography." },
+            { id: 93, text: "Long term complications of this injury includes:", options: ["Cubitus varus", "Volkmann's ischemic contractures", "Heterotopic ossification", "Stiffness at the elbow joint", "Cubitus valgus"], correct: ["A", "B", "C", "D", "E"], exp: "Supracondylar fracture long-term sequelae encompass angular deformities (gunstock/cubitus varus, cubitus valgus), Volkmann contracture, stiffness, and heterotopic ossification." },
+            { id: 94, text: "A 20-year-old male pillion rider in a motorcycle accident has GCS 12, femur fracture, and blood at urethral meatus. Mandatory 'trauma series' x-rays include:", options: ["Skull x-rays", "Chest x-rays", "Cervical spine x-rays", "Lumbar spine x-rays", "Pelvic x-rays"], correct: ["B", "C", "E"], exp: "Standard ATLS initial resuscitation trauma radiograph series consists of: AP Chest, AP Pelvis, and Lateral Cervical Spine." },
+            { id: 95, text: "Pelvic x-rays done show grossly displaced fractures of the pelvis.", options: ["You will pass a 24g Foley's catheter if he goes into acute urinary obstruction", "An intravenous urogram is indicated to make a diagnosis of urethral rapture", "A paralytic ileus is a complication that arises from a retroperitoneal hematoma which is best treated by surgical evacuation", "A pelvic external fixator when applied helps to stabilize the pelvis and reduce hemorrhage", "The mortality rate from pelvic fractures is about 20%"], correct: ["D", "E"], exp: "Pelvic stabilization via external fixator or binder reduces pelvic volume, tamponading retroperitoneal bleeding. High-energy pelvic ring disruption carries ~15-20% mortality." },
+            { id: 96, text: "In the management of open fractures of the tibia", options: ["Primary suturing of the soft tissue is recommended to prevent further contamination of the fracture", "External fixation of the fracture is not recommended if the wound is less than a centimeter in diameter", "Fracture healing will be delayed if there is extensive stripping of soft tissue like muscle and periosteum", "Wound swabs at the time of debridement is taken to determine any bacterial contamination", "Penicillin should be used as prophylaxis against osteomyetitis"], correct: ["C"], exp: "Periosteal and muscular soft tissue stripping devitalizes bone fragments, directly predisposing to non-union and delayed union." },
+            { id: 97, text: "The following are complications that can occur following the treatment of a Colles' fracture except:", options: ["Reflex Sympathetic Dystrophy", "Frozen shoulder", "Carpal tunnel syndrome", "Stiff wrist joint", "Mal-union"], correct: ["C"], exp: "While median nerve compression can occur, acute carpal tunnel syndrome is less characteristic as an isolated classic delayed complication compared to RSD, shoulder stiffness, and malunion." },
+            { id: 98, text: "A 75year old lady presents with an intracapsular fracture of right hip undergoing hemiarthroplasty:", options: ["Her risk of deep vein thrombosis (DVT) is 70% if no prophylaxis is given against it.", "Aspirin at a high dose of 300mg daily is recommended for prevention of DVT", "The advantage of warfarin is that it has rapid onset of action and does not require monitoring", "A prior history of DVT does not increase her risk of a new clot", "General anesthesia is superior to regional anesthesia for the on table prevention of DVT during hip fracture surgery"], correct: ["A"], exp: "Without pharmacologic thromboprophylaxis, total DVT incidence following major hip surgery/hip fracture reaches 50-70%." },
+            { id: 99, text: "A 19yr old student presents with anterior dislocation of right shoulder in a basketball game:", options: ["Damage to the axillary nerve will present as decreased sensation at the point of the shoulder", "Open reduction of the shoulder is the definitive management", "The risk of recurrent dislocation of the shoulder joint is higher in patients below the age of 20yrs", "Bankart's lesion is a tear in the anterior capsule of the shoulder joint", "The mechanism of injury is usually by a posteriorly directed force to the shoulder in abduction and external rotation"], correct: ["A", "C", "E"], exp: "Axillary nerve innervation provides sensation over regimental badge area (deltoid). Recurrent dislocation rates exceed 80-90% in young patients under 20." },
+            { id: 100, text: "In the management of supracondylar fractures of the humerus in children", options: ["Limb shortening due to premature physeal closure is a common complication", "An angiogram is indicated where there is suspicion of a compartment syndrome", "Closed reduction of the fracture with percutaneous pinning with kirschner wires is recommended for displaced fractures", "Injury to the ulnar nerve is a common complication", "Cubitus varus also referred to as a 'gunstock' deformity is a late complication"], correct: ["C", "E"], exp: "Gartland Type II/III displaced supracondylar fractures are treated with closed reduction and percutaneous K-wire fixation. Malunion results in cubitus varus (gunstock deformity)." }
+        ];
+
+        const RAW_DATA_CH54 = [
+            { id: 1, text: "In the anatomy of bone:", options: ["The metaphysis is the part of the diaphysis adjoining the epiphyseal plate", "The actively growing segment of the bone is the epiphysis", "The periosteum ensheaths the bone and is made up of fibrous tissue capable of laying down bone", "Bone is made up of bone cells in a matrix of mineralized osteoid", "The diaphysis is the site of origin of most diseases of the bone"], correct: ["A", "D"], exp: "The metaphysis adjoins the epiphyseal physis plate. Mineralized osteoid matrix housing osteocytes, osteoblasts, and osteoclasts forms structural bone." },
+            { id: 2, text: "In bone:", options: ["There is no lymphatic drainage", "The nerve supply is rich in the periosteum and scanty in the rest of the bone", "The circulus vasculosus of Hunter supplies the metaphysis", "The Harvesian system (concentric cylindrical tubes centered on blood vessels) is found in compact and cancellous bone", "The cancellous bone is the initial site of osteomyelitis or myeloma"], correct: ["B", "E"], exp: "Periosteum contains a rich sensory nerve supply. Cancellous trabecular bone with vascular marrow is the primary site of origin for hematogenous osteomyelitis and plasma cell dyscrasias." },
+            { id: 3, text: "The rate of formation and breakdown of bone is influenced by:", options: ["Vitamin B", "Exercise", "Mineralo-corticoids", "Level of serum calcium", "Calcitonin"], correct: ["B", "E"], exp: "Mechanical loading (exercise) stimulates osteoblastic bone remodeling. Calcitonin directly inhibits osteoclast-mediated resorption." },
+            { id: 4, text: "Bone:", options: ["Contains about 90% of the calcium in the body", "Contains about 85% of the phosphate in the body", "Resorption is enhanced by calcitonin", "Contains magnesium, carbonate and chloride but no fluoride", "Formation stops in old age"], correct: ["B"], exp: "Approximately 85% of total body phosphorus and 99% of total body calcium are stored within the skeletal hydroxyapatite bone matrix." },
+            { id: 5, text: "Calcium:", options: ["Mobilization from bone is enhanced by parathormone", "Excretion by the renal tubules is stimulated by dihydroxy-chole-calciferol", "Excretion by the renal tubules is stimulated by parathormone", "Absorption from the intestine is stimulated by calciferol", "Absorption from the intestine is stimulated by calcitonin"], correct: ["A"], exp: "Parathyroid hormone (PTH) stimulates osteoclast activity and osteolysis to mobilize calcium from bone into circulation." },
+            { id: 6, text: "Synovial joints include:", options: ["Syndesmosis", "Ellipsoid joint", "Pivot joint", "Gomphosis", "Amphiarthrosis"], correct: ["B", "C"], exp: "Ellipsoid (condyloid) and pivot (trochoid) joints are true synovial joints with fluid-filled articular cavities." },
+            { id: 7, text: "Concerning joints:", options: ["The co-efficient of friction is very low and equals that of ice", "The articular cartilage is avascular and depends on synovia and sub-chondral osseous blood supply for nutrition", "A detached articular cartilage does not grow", "Synovia makes the articular cartilage the slipperiest surface known", "Joint space seen on x-ray is the space between the articular cartilages"], correct: ["B", "D"], exp: "Articular cartilage is avascular/aneural, nourished via synovial fluid diffusion. Synovial fluid lubrication delivers extraordinarily low friction coefficients." },
+            { id: 8, text: "Which of the following is/are transmitted by dominant genes:", options: ["Sickle cell disease", "Achondroplasia", "Haemophilia", "Congenital dislocation of the hip", "Talipes equino-varus"], correct: ["B"], exp: "Achondroplasia is inherited as an Autosomal Dominant trait (FGFR3 gene mutation) with complete penetrance." },
+            { id: 9, text: "In the grading of muscle power according to the Medical Research Council classification grade:", options: ["3 is movement with gravity eliminated", "1 is no flicker", "5 is normal power", "2 is movement against gravity", "4 is movement against resistance"], correct: ["C", "E"], exp: "MRC Muscle Scale: Grade 0 (None), 1 (Flicker), 2 (Gravity eliminated), 3 (Against gravity), 4 (Against moderate resistance), 5 (Normal power)." },
+            { id: 10, text: "In the examination of the hip joint:", options: ["True shortening is found by measuring the distance between the anterior superior iliac spine and the medial malleolus with the pelvis level", "Apparent shortening is found by measuring the distance between the symphysis pubis and the medial malleolus with the pelvis level", "If apparent shortening is equal to true shortening then there is no abduction deformity", "Flexion deformity is measured as the angle at the beginning of movement", "It is always essential to measure Bryant's triangle to estimate a raised greater trochanter"], correct: ["A", "D"], exp: "True leg length discrepancy is measured from ASIS to medial malleolus with pelvis squared. Fixed flexion contracture is evaluated via Thomas test." },
+            { id: 11, text: "In the examination of the hip and lower limb:", options: ["A positive Trendelenburg's test indicates a stable hip", "A raised greater trochanter is seen in a dislocated hip", "Nelaton's line is undisturbed in coxa vara", "Abduction to 90° is possible in a normal adult hip", "The level of the pelvis is not of any significance"], correct: ["B"], exp: "Proximal migration of the greater trochanter above Nélaton's line occurs in posterior hip dislocations, coxa vara, and un-united femoral neck fractures." },
+            { id: 12, text: "The following lines/signs assist in the assessment of the hip on x-rays:", options: ["Perkin's lines", "Pauwell's lines", "McMurrays's sign", "Trethowan's sign", "Shenton's line"], correct: ["A", "B", "D", "E"], exp: "Radiographic hip reference lines include Perkin's line, Pauwel's angle of fracture orientation, Trethowan's sign (DDH/SUFE), and Shenton's continuous arch." },
+            { id: 13, text: "A 10-year old boy presenting with acute upper tibial tenderness, fever 40°C, and systemic toxicity. The most likely clinical diagnosis is:", options: ["Fracture of the upper end of the tibia", "Cellulitis", "Septic arthritis of the knee", "Osteomyelitis of the upper end of the tibia", "Haematoma"], correct: ["D"], exp: "Acute metaphyseal localized tenderness in a child accompanied by high fever and systemic toxicity is classic for acute hematogenous osteomyelitis." },
+            { id: 14, text: "The diagnosis can be confirmed by:", options: ["X-ray of the lower leg and knee", "Haemoblobin, white blood cell and differential", "Erythrocyte sedimentation rate (ESR)", "Repeated blood cultures", "Aspiration"], correct: ["D"], exp: "Isolation of the causative pathogen (Staph aureus) via blood cultures or subperiosteal bone aspiration provides definitive microbiological diagnosis." },
+            { id: 15, text: "An x-ray of the leg and knee in acute osteomyelitis (<10 days) will show:", options: ["New bone formation and elevated periosteum", "Loss of joint space", "Osteolysis", "Fracture", "No bony abnormality"], correct: ["E"], exp: "Plain radiographs remain normal during the first 7-14 days of acute osteomyelitis before periosteal reaction or lytic changes become visible." },
+            { id: 16, text: "Treatment will include:", options: ["Full leg plaster of Paris and analgesics", "Bed rest, splintage of the leg in a Thomas' splint and analgesics", "Cloxacillin and ampicillin intravenously for 5 days followed by oral administration for up to 6 weeks", "Aspiration of the knee", "Intravenous fluids and/or blood transfusion"], correct: ["B", "C", "E"], exp: "Standard therapy for acute osteomyelitis: High-dose empirical parenteral antistaphylococcal antibiotics, limb immobilization/splinting, and supportive hydration." },
+            { id: 17, text: "Acute haematogenous osteomyelitis:", options: ["Is most commonly caused by staph pyogenes", "Is associated with trauma in a few patients and overt septic skin lesion in the majority", "In children commonly starts in the diaphysis", "In Africa has a higher incidence among sicklers", "Always leads to the formation of a sequestrum"], correct: ["A", "D"], exp: "Staphylococcus aureus is the predominant organism. Patients with Sickle Cell Disease have markedly increased susceptibility (including Salmonella osteomyelitis)." },
+            { id: 18, text: "Complications of acute haematogenous osteomyelitis include:", options: ["Osteosarcoma", "Brain abscess", "Pathological fracture", "Bone deformity", "Ankylosis of the adjoining joint"], correct: ["B", "C", "D"], exp: "Inadequate treatment of osteomyelitis leads to cortical necrosis, pathologic fractures, physeal arrest deformities, and metastatic septic emboli (e.g. brain abscess)." },
+            { id: 19, text: "Acute septic arthritis:", options: ["May be caused by N. gonorrhea", "Gives rise to joint swelling, restricted active movement but presence of passive movement", "Is best diagnosed by aspiration of the joint", "Maybe associated with hyperuricaemia", "On x-ray shows Osteolysis of the bones in the joint"], correct: ["A", "C"], exp: "N. gonorrhoeae is a frequent cause in sexually active young adults. Diagnostic gold standard is joint fluid aspiration for cell count, Gram stain, and culture." },
+            { id: 20, text: "A 16-year old boy with intermittent distal tibial pain; X-ray shows a cystic area surrounded by sclerotic bone. The most likely diagnosis is:", options: ["Osteosarcoma", "Non-ossifying fibroma", "Simple bone cyst", "Brodie's abscess", "Osteoid osteoma"], correct: ["D"], exp: "Brodie's abscess is a subacute/chronic localized form of osteomyelitis characterized by a lytic bone lesion surrounded by a thick zone of reactive sclerosis." },
+            { id: 21, text: "The treatment is:", options: ["A course of penicillin for 4-6 weeks", "Amputation followed by cytotoxic chemotherapy", "Opening of the swelling and curettage", "Excision of the swelling", "Opening of the swelling and filling it with bone chips"], correct: ["C"], exp: "Management of Brodie's abscess requires surgical evacuation, curettage of the sclerotic cavity, and targeted antibiotic therapy." },
+            { id: 22, text: "Chronic osteomyelitis:", options: ["Is caused by E. coli", "Presents with recurrent sinuses preceded by painful tender swelling", "On x-ray characteristically shows periosteal new bone formation", "May lead to squamous cell carcinoma", "Is treated by laying the sinus open"], correct: ["B", "D"], exp: "Chronic osteomyelitis presents with persistent sinus tracts draining sequestrum. Long-standing sinus tracts carry a risk of malignant transformation into Marjolin's ulcer (Squamous Cell Carcinoma)." },
+            { id: 23, text: "Tuberculosis of bones and joints:", options: ["Is most common in the hip", "Is most commonly caused by the bovine type of M. tuberculosis", "Is blood-borne usually from the intestinal tract.", "Starts in a focus at the metaphysis", "May cause meningitis or military tuberculosis"], correct: ["E"], exp: "Hematogenous dissemination of Mycobacterium tuberculosis from primary pulmonary foci can produce spinal/skeletal TB, miliary disease, or tubercular meningitis." },
+            { id: 24, text: "Clinical features of tuberculous arthritis include:", options: ["Pain in the joint which improves at night when the muscles are relaxed", "Limping and restriction of active but not passive movements", "Swelling of the joint due to synovial effusion and degeneration", "Tenderness of the joint", "Pyrexia at night"], correct: ["C", "D", "E"], exp: "TB arthritis presents insidiously with 'doughy' joint swelling, joint tenderness, night cries/night sweats, and restriction of ALL joint movements (active and passive)." },
+            { id: 25, text: "In the investigation of suspected tuberculous arthritis in a 16-year old boy, the following MUST be done:", options: ["IVP", "Culture of early morning gastric washout", "Biopsy (needle or open) of synovial membrane", "Lumbar puncture", "Cystoscopy"], correct: ["C"], exp: "Histopathological confirmation demonstrating caseating granulomas and AFB positivity via synovial tissue biopsy is diagnostic." },
+            { id: 26, text: "The general principles in the treatment of joint tuberculosis include:", options: ["Immobilization of the joint in the position of function until the symptoms subside and ESR is normal", "Administration of streptomycin, PAS and INAH for at least 18months", "Provision of protein-rich diet and vitamin D", "Arthrodesis of the affected joint when the disease becomes quiescent", "Examination of all contacts"], correct: ["A", "C", "E"], exp: "Joint TB management relies on prolonged anti-tubercular chemotherapy (ATT), nutritional support, functional splinting, and screening contacts." },
+            { id: 27, text: "In tuberculosis of the spine:", options: ["The commonest sites are the lower cervical, upper thoracic and lower lumbar vertebrae", "An abscess from the lumbar spine may present in the iliac fossa, groin, triangle of Petit or gluteal region", "The first radiological sign is destruction of the body of the vertebra", "There may be concomitant lung involvement in about 50% of patients", "The Mantoux and Heaf's tests are weakly positive in most patients"], correct: ["B", "D"], exp: "Lumbar tuberculous cold abscesses track along the psoas sheath to present in the groin/iliac fossa. Concomitant active or healed pulmonary TB is present in ~50%." },
+            { id: 28, text: "Tuberculous (Pott's) paraplegia:", options: ["Is not likely to arise during treatment of tuberculosis of the spine", "Is always spastic in type", "May spare the sphincters and sensation", "Requires operation only if bed rest and chemotherapy do not produce some recovery within 3 months", "Has a poor prognosis; only about 40% of patients are able to walk"], correct: ["C"], exp: "In early or mild Pott's paraplegia secondary to epidural abscess compression, posterior column sensation and bowel/bladder sphincters may initially be spared." },
+            { id: 29, text: "A woman of 25 with a soft, painless wrist/hand flexor swelling showing crepitus (rice bodies). Most likely diagnosis:", options: ["Rheumatoid arthritis of the wrist", "Tuberculous arthritis of the wrist", "Tuberculous tenosynovitis", "Sprain of the wrist", "Gout"], correct: ["C"], exp: "Compound volar ganglion / Tuberculous tenosynovitis of the flexor sheaths presents with a dumbbell wrist/palmar swelling containing melon-seed 'rice bodies'." },
+            { id: 30, text: "The most useful investigation is:", options: ["X-ray of the wrist", "Mantoux test", "White cell counts and differential", "Biopsy", "Serum uric acid"], correct: ["D"], exp: "Histological examination of excised synovial sheath showing caseating granulomatous inflammation confirms tuberculous tenosynovitis." },
+            { id: 31, text: "In acute infections of the hand:", options: ["The commonest organisms are Esch. coli and Strep. haemolyticus", "The antibiotics of first choice are penicillin, ampicillin or ox tetracycline", "Suppuration is inevitable", "Pus should be drained as soon as it is formed, the incision being placed over the point of maximum tenderness", "Acute osteomyelitis may be a complication"], correct: ["D", "E"], exp: "Surgical incision and drainage should occur over the point of maximal tenderness once purulence forms to prevent bone invasion/osteomyelitis." },
+            { id: 32, text: "Chronic paronychia:", options: ["Is an insidious low grade infection of the nail fold", "Is caused by Staph. aureus", "Is treated with tetracyclines or penicillin for 3-4 weeks", "If unresponsive to conservative treatment will require the removal of the nail", "May cause osteomyelitis of the phalanx"], correct: ["A", "D"], exp: "Chronic paronychia is a chronic peri-ungual inflammatory state (often Candida/mixed flora). Recalcitrant cases require marsupialization or eponychial excision / nail extraction." },
+            { id: 33, text: "A carpenter with throbbing palmar pain and dorsal swelling; finger extension does not provoke sheath pain. Diagnosis:", options: ["Cellulitis of the hand", "Septic blister of the palm", "Palmar space infection", "Infection of the ulnar bursa", "Infection of the radial bursa"], correct: ["C"], exp: "Infection of deep palmar spaces (midpalmar or thenar space) presents with severe palmar tenderness and prominent ballooning edema of the loose dorsal hand skin." },
+            { id: 34, text: "In osteogenesis imperfecta:", options: ["Collagen formation is normal but osteoid formation is defective", "The sclera of the eye is blue", "Otosclerosis occurs early in adulthood", "The serum calcium and alkaline phosphatase are normal", "Fluoride is of proven value"], correct: ["B", "C"], exp: "Osteogenesis imperfecta (Type 1 collagen defect) features bone fragility, blue sclerae (due to choroidal translucency through thin sclera), and early-onset conductive hearing loss." },
+            { id: 35, text: "Achondroplasia:", options: ["Is a deformation", "Is caused by defective growth of the diaphysis", "Is associated with subnormal intelligence", "Gives rise to three divergent mid-fingers of about the same length", "Gives rise to genu varus"], correct: ["D", "E"], exp: "Achondroplasia impairs endochondral ossification of physes, yielding short-limbed dwarfism, trident hands (fingers equal length), bow legs (genu varum), and normal intellect." },
+            { id: 36, text: "Features of dyschondroplasia (Ollier's disease)", options: ["Ecchondromata", "Enchondromata", "Limb shortening", "Malignant degeneration", "Sexual precocity"], correct: ["B", "C"], exp: "Ollier's disease is characterized by multiple asymmetric intra-medullary cartilaginous tumors (enchondromas) leading to limb shortening and angular deformities." },
+            { id: 37, text: "Diaphyseal aclasis (Multiple Hereditary Exostoses):", options: ["Is familial with a male preponderance", "Affects the growing ends of long and short bones", "Results from defective moulding of the metaphysis leaving islands of bone on the diaphysis", "Continues to grow even after cessation of growth of the skeleton", "May rarely become malignant"], correct: ["A", "C", "E"], exp: "Autosomal dominant condition featuring multiple osteochondromas due to defective metaphyseal remodeling. Growth stops at skeletal maturity; adult growth implies chondrosarcoma transformation." },
+            { id: 38, text: "In cleido-cranial dysostosis:", options: ["There is premature fusion of the fontanelles and membrane bones", "The vault of the skull is high and pointed", "The clavicles are either missing or defective in the center or at either end and the shoulders can be made to touch in front", "There may be an extra long index finger and syndactyly", "Operative correction of the defects gives satisfactory results"], correct: ["C"], exp: "Defective intramembranous ossification causes aplasia/hypoplasia of clavicles, allowing hypermobility where shoulders can be approximated anteriorly in the midline." },
+            { id: 39, text: "In fibrous dysplasia:", options: ["The affected bones are replaced by fibrous tissue and bend easily", "The metaphysis is the part affected", "Radiolucent areas looking like cysts abound", "If there is associated skin pigmentation with sexual precocity in the male, it is known as Albright's syndrome", "Calcium and calcitonin have been found useful"], correct: ["A", "C"], exp: "Normal bone medullary space is replaced by fibro-osseous tissue with characteristic 'ground-glass' matrix, predisposing to deformities ('shepherd's crook') and pathologic fractures." },
+            { id: 40, text: "A defect of the upper limb:", options: ["Is usually a malformation", "Is usually due to damage of the limb bud which appears in the 4th intra-uterine week", "If a congenital amputation, then development of the limb stops at any level from the elbow to the wrist", "If the short bones are absent then it is phocomelia", "Is radio-ulnar synostosis if the radius and ulna are joined distally by a bridge of bone which prevents pronation and supination"], correct: ["A"], exp: "Structural upper extremity anomalies arising from primary intrinsic embryonic developmental errors are categorized as congenital malformations." },
+            { id: 41, text: "Congenital dislocation of the hip (DDH):", options: ["Is fairly common in Black Africa", "Presents as adducted and flexed hip", "Gives a click when it is reduced", "Can be cured if discovered at birth and retained in a Barlow splint for 3 months", "If resistant to conservative measures should be treated by open reduction at 4 years."], correct: ["C", "D"], exp: "Ortolani test elicits a palpable/audible 'click' or 'clunk' as the dislocated femoral head reduces into the acetabulum. Early dynamic splinting (Pavlik harness / Barlow) yields high cure rates." },
+            { id: 42, text: "Talipes equino-varus (Clubfoot):", options: ["Is a defect of the foot in which the foot is plantar-flexed, inverted and adducted", "Is primarily a subluxation of the mid-tarsal joint", "May be a malformation or a deformation", "In a child that is walking, only the outer side of the sole touches the ground", "Is more common in females"], correct: ["A", "B", "C"], exp: "Clubfoot (CTEV) components include Midfoot CAVE: Cavus, Forefoot Adduction, Hindfoot Varus, and Ankle Equinus, caused by talocalcaneonavicular subluxation." },
+            { id: 43, text: "In Klippel-Feil syndrome, there:", options: ["Is a high hair line", "Is a very short neck", "Is unilateral Sprengel's shoulder", "May be fusion of vertebrae", "May be kyphosis"], correct: ["B", "D"], exp: "Klippel-Feil triad: Low posterior hairline, short neck, and restricted neck motion due to congenital segmentation failure/fusion of cervical vertebrae." },
+            { id: 44, text: "Congenital infantile torticollis:", options: ["Is a deformation from intra-uterine pressure", "Leads to fibrosis of some fibres of the sterno-mastoid muscle", "Causes tilting of the head to the affected side", "Causes rotation of the face to the affected side", "Is managed in the early cases by division of the sterno-mastoid muscle"], correct: ["B", "C"], exp: "Sternocleidomastoid tumor/fibrosis causes ipsilateral lateral head tilt towards the tight muscle and chin rotation towards the opposite contralateral shoulder." },
+            { id: 45, text: "In peripheral nerve lesion:", options: ["Axonotmesis is anatomical division of a nerve", "Neurotmesis is a lesion in which the Schwann sheath is intact but the medulla is damaged and undergoes Wallerian degeneration.", "Neuropraxia is a lesion in which there is cessation of transmission of nerve impulses but no detectable anatomical damage", "The rate of nerve growth in neurotmesis is 1mm a day", "Recovery is possible in Axonotmesis only if there is surgical approximation of the divided ends"], correct: ["C"], exp: "Seddon Classification: Neuropraxia is transient conduction block without structural axonal disruption; full recovery occurs spontaneously." },
+            { id: 46, text: "In peripheral nerve injuries:", options: ["Extended elbow with pronated forearm and hand is suggestive of injury of the lower trunk of the brachial plexus", "Clawing of all fingers of the hand is suggestive of median nerve injury", "Foot drop is suggestive of medial popliteal nerve injury", "Loss of sensation of the sole of the foot is suggestive of posterior tibial nerve injury", "Analgesia of the dorsum of the thumb, index and middle fingers just beyond the distal interphalangeal joint is suggestive of median nerve injury"], correct: ["D", "E"], exp: "Tibial nerve innervates sole plantar skin. Median nerve supplies palmar/dorsal skin of digits 1-3.5 distal to DIP joints." },
+            { id: 47, text: "Erb's palsy:", options: ["Results most commonly from difficult breech delivery", "Affects the biceps and brachialis", "Causes supination of the forearm and extension of the elbow", "Untreated, results in a stiff internally rotated shoulder", "Has a poor prognosis"], correct: ["B", "D", "E"], exp: "Erb-Duchenne paralysis (C5-C6 upper plexus injury) causes 'waiter's tip' posture (shoulder adducted/internally rotated, elbow extended, forearm pronated) with loss of biceps/brachialis." },
+            { id: 48, text: "Klumpke's palsy:", options: ["Results from breech delivery", "Affects C8 and T1", "Causes paralysis only of the hand", "Recovers rapidly", "Is treated by passive movements"], correct: ["A", "B"], exp: "Klumpke's palsy (lower plexus C8-T1 disruption) occurs during hyperabduction/breech extraction, producing claw hand due to intrinsic muscle weakness." },
+            { id: 49, text: "Anterior poliomyelitis:", options: ["Is an acute inflammation of the cells of the anterior, posterior and lateral horns of the spinal cord and motor cells of the brain stem", "Is caused by an entero-virus of which there are anti-genetically four", "Is endemic with occasional epidemics", "Is now rare", "Affects mostly people over 5 years"], correct: ["C"], exp: "Poliovirus selectively attacks anterior horn motor neurons of the spinal cord, leading to asymmetric flaccid paralysis." },
+            { id: 50, text: "In anterior poliomyelitis:", options: ["The virus enters the oro-pharynx only by inhalation of droplets", "Paralytic poliomyelitis probably accounts for about 20% of cases in an epidemic", "Paralysis is related to injury or vigorous activity during the incubation period but not to recovery from a debilitating illness", "Males are more commonly affected", "The incubation is usually 1-2 weeks but may last 5 weeks"], correct: ["E"], exp: "Incubation period of enteroviral poliomyelitis typically ranges between 7 to 14 days (up to 35 days)." },
+            { id: 51, text: "Symptoms of anterior poliomyelitis include:", options: ["Diarrhoea", "Photophobia and stiffness of the neck", "Paraesthesia, sore throat and headache", "Muscle pain and tenderness", "Fever, cough and dyspnoea"], correct: ["A", "B", "D"], exp: "Prodromal viral symptoms include gastroenteritis (diarrhea), meningeal signs (nuchal rigidity, photophobia), and localized myalgias/muscle tenderness." },
+            { id: 52, text: "Paralysis in anterior poliomyelitis", options: ["Comes on gradually", "Reaches a peak in 2-3 weeks and most recovery is within 6 months of attack", "Is flaccid in type", "Involves in order of increasing intensity, the lower limbs, trunk and upper limb", "Causes incontinence"], correct: ["C"], exp: "Anterior horn cell destruction yields acute lower motor neuron (LMN) flaccid paralysis with loss of deep tendon reflexes." },
+            { id: 53, text: "Measures adopted in the treatment of residual paralysis in anterior poliomyelitis include:", options: ["No treatment", "Tenotomy", "Tendon transplantation", "Arthrodesis", "Osteotomy"], correct: ["A", "B", "C", "D", "E"], exp: "Reconstructive procedures for post-polio deformities include tendon transfers, soft-tissue contracture tenotomies, corrective osteotomies, and joint arthrodesis." },
+            { id: 54, text: "In anterior poliomyelitis:", options: ["The mortality is about 10%", "About 50% have residual paralysis", "Elimination from a community can be achieved by the immunization of most of the infants", "The Salk vaccine is more effective than the Sabin vaccine in prevention", "The Sabin vaccine is given orally"], correct: ["A", "E"], exp: "Bulbar polio carries high mortality (~10%). Live attenuated Sabin vaccine (OPV) is administered orally." },
+            { id: 55, text: "Cerebral palsy may be caused by:", options: ["Rhesus incompatibility", "Sickle cell disease", "Antepartum haemorrhage", "Asphyxia neonatorum", "Encephalitis."], correct: ["A", "C", "D", "E"], exp: "Etiologies of CP include perinatal hypoxia/asphyxia, kernicterus (Rh disease), intrapartum hemorrhage, and infantile encephalitis." },
+            { id: 56, text: "In spastic paralysis or paresis:", options: ["The lesion is in the basal ganglia", "The infant has no difficulty in sucking but may have difficulty in holding up the head later", "The hands go involuntarily into flexion at the wrist with adduction of the thumb", "There is ataxia of gait", "There may be choreiform movements and hyperkinesia"], correct: ["C"], exp: "Spastic CP (corticospinal upper motor neuron lesion) features classic flexor hypertonia: wrist flexion, pronation, and thumb-in-palm deformity." },
+            { id: 57, text: "Osteochondritis juvenilis:", options: ["Is associated with disturbance of the vascular supply to a segment of bone and its adjoining cartilage", "Affects the metaphysis primarily", "Is caused by hormonal imbalance", "Is best treated by repeated injection of hydrocortisone with xylocaine into the affected joint", "Usually takes 12-18 months to settle"], correct: ["A", "E"], exp: "Aseptic avascular necrosis of epiphyses (osteochondrosis) involves ischemia followed by revascularization and repair over a 1-2 year cycle." },
+            { id: 58, text: "Examples of traction epiphyseal or apophyseal type of Osteochondritis juvenilis include:", options: ["Kienboch's disease of the lunate", "Freiberg's disease of the head of the 2nd or 3rd metatarsal", "Osgood-Schlatter's disease of the tibial tuberosity", "Osteochondritis dissecans of the medial femoral condyle", "Perthes' disease"], correct: ["C"], exp: "Osgood-Schlatter disease is repetitive microtrauma traction apophysitis at the insertion of the patellar tendon into the tibial tuberosity." },
+            { id: 59, text: "A 7-year old boy with painful right hip and limp for 4 weeks; no fever or constitutional symptoms; limited hip motion. Most likely diagnosis:", options: ["Synovitis", "Tuberculous arthritis of the hip", "Septic arthritis of the hip", "Osteochondritis of the femoral capital epiphysis", "Irritable hip"], correct: ["D"], exp: "Perthes' disease (idiopathic avascular necrosis of femoral capital epiphysis) presents typically in young boys (aged 4-8) with painless or mild antalgic limp and restricted internal rotation/abduction." },
+            { id: 60, text: "In Perthes' disease:", options: ["The male/female ratio is 1/4", "Late cases have limitation of abduction and internal rotation", "X-ray may show a small or fragmented opaque capital epiphysis", "Most patients under 6 years do well with or without treatment", "Treatment averts deformity in most patients over 9 years"], correct: ["B", "C", "D"], exp: "Perthes shows male predominance (4:1). Radiographs reveal dense, fragmented epiphysis. Younger patients (<6 yrs) have favorable remodeling potential." },
+            { id: 61, text: "Blount's disease (osteochondrosis deformans tibiae)", options: ["Is seen all over the world", "Results from disturbance of growth at the lateral aspect of the upper tibial metaphysis", "Results in genu valgum", "If bilateral, the child may be so deformed as to walk with the pelvis a few inches from the ground", "Is treated by tibial osteotomy"], correct: ["D", "E"], exp: "Blount's disease is growth suppression of posteromedial proximal tibial physis causing progressive genu varum (bow legs); severe cases require proximal tibial valgus osteotomy." },
+            { id: 62, text: "Idiopathic slipped upper femoral epiphysis (SUFE):", options: ["Is a gradual downward and anterior displacement of the femoral capital epiphysis in adolescents.", "Causes limitation of external rotation and adduction", "May be associated with hypogonadism", "Is bilateral in about 40% of patients", "Is best treated by reduction"], correct: ["C"], exp: "SUFE occurs in overweight adolescents or those with endocrine disorders (hypogonadism/hypothyroidism). Epiphysis slips posteriorly and inferiorly." },
+            { id: 63, text: "Osteoarthritis:", options: ["Is an atrophic degenerative joint disease", "Causes limitation of external rotation and adduction", "Maybe be associated with hypogonadism", "Is bilateral in about 40% of patients", "Is best treated by reduction"], correct: ["E"], exp: "Surgical joint realignment/osteotomy or arthroplasty aims to correct joint congruity in osteoarthritis." },
+            { id: 64, text: "Osteoarthritis may be caused by:", options: ["Genu valgum", "Septic arthritis", "Intra-articular cortisone therapy", "Delayed union of a fracture", "AS disease"], correct: ["A", "B", "C"], exp: "Secondary osteoarthritis results from altered joint mechanics (genu valgum), direct cartilage destruction (septic arthritis), or repeated intra-articular steroid-induced chondrotoxicity." },
+            { id: 65, text: "In osteoarthritis:", options: ["There is fragmentation of the articular cartilage", "The synovial membrane is thin", "Young blood vessels invade the peripheral articular cartilage", "There is friction on the subchondral bone", "The adjoining bone undergoes osteolysis"], correct: ["A", "C", "D"], exp: "OA pathogenesis involves hyaline cartilage fibrillation/fragmentation, subchondral bone eburnation/friction, and vascular outgrowth forming marginal osteophytes." },
+            { id: 66, text: "The characteristic clinical symptoms of osteoarthritis is/are:", options: ["Increasing stiffness", "Pain", "Crepitus", "Deformity", "Swelling"], correct: ["A", "B", "C", "D", "E"], exp: "OA hallmarks: Use-related joint pain, morning/inactivity stiffness, bony enlargement, joint line tenderness, crepitus, and progressive angular deformity." },
+            { id: 67, text: "The pain in osteoarthritis:", options: ["Is initially intermittent and later becomes constant", "Occurs on movement", "Is not relieved by rest", "Arises from spasm of local muscle and not from the joint", "Is not referred to another joint"], correct: ["A", "B"], exp: "Osteoarthritic pain is characteristically mechanical—exacerbated by joint loading/movement and relieved by rest initially, becoming constant in advanced stages." },
+            { id: 68, text: "In osteoarthritis of the hip, the joint is:", options: ["Abducted", "Internally rotated", "Flexed", "Ankylosed", "Externally rotated"], correct: ["C"], exp: "Advanced hip OA causes progressive fixed flexion, adduction, and external rotation deformity." },
+            { id: 69, text: "X-ray of a joint in osteoarthritis shows:", options: ["Broadening of joint space", "Subchondral osteoporosis", "Osteophytes", "Lipping of marginal bone", "Articular cyst formation"], correct: ["C", "D"], exp: "Classic radiographic OA features (LOSS): Asymmetric joint space Loss, Osteophytes (marginal lipping), Subchondral Sclerosis, and Subchondral Cysts." },
+            { id: 70, text: "Oral drugs that may be used in osteoarthritis include:", options: ["Acetylsalicylic acid", "Cortisone", "Ketobrufen", "Piroxicam", "Morphine"], correct: ["A", "C", "D"], exp: "Analgesics and Non-Steroidal Anti-Inflammatory Drugs (NSAIDs like aspirin, ketoprofen, piroxicam) reduce osteoarthritic nociceptive pain and synovitis." },
+            { id: 71, text: "The following may be adopted in the treatment of osteoarthritis:", options: ["Hot fermentation", "Arthroplasty", "Amputation", "Arthrodesis", "Osteotomy"], correct: ["B", "D", "E"], exp: "Surgical options for end-stage OA: Total joint replacement (arthroplasty), joint fusion (arthrodesis), or realigning realignment osteotomy." },
+            { id: 72, text: "Growth hormone:", options: ["Is produced by the basophil cells of the anterior pituitary", "Stimulates protein synthesis and growth", "Enhances glucose uptake by the cells", "If produced excessively before epiphyseal fusion leads to acromegaly", "If deficient in childhood leads to a dwarf with small trunk, small limbs, big head and normal intelligence"], correct: ["B"], exp: "Somatotropin (GH) secreted by anterior pituitary somatotrophs promotes skeletal/somatic growth by enhancing amino acid uptake and protein synthesis." },
+            { id: 73, text: "Features of acromegaly include:", options: ["Increased height", "Prominent mandible", "Thickening of face", "Prominent supra-orbital ridge", "Long limbs"], correct: ["B", "C", "D"], exp: "Post-physeal fusion excess GH causes acral/soft tissue overgrowth: Pronounced prognathism (mandible), frontal bossing (supraorbital ridges), and facial coarsening." },
+            { id: 74, text: "Bone is affected by:", options: ["Thyroxine", "Testosterone", "Oestrogen", "Cortisol", "Glucagon"], correct: ["A", "B", "C", "D"], exp: "Skeletal metabolism and bone remodeling are modulated by thyroid hormones, sex steroids (estrogen, testosterone), and glucocorticoids (cortisol)." },
+            { id: 75, text: "In osteoporosis:", options: ["There is a reduction in bone mass per unit volume", "Osteoid formation is normal", "Calcification of osteoid is deficient", "Post-menopausal women are more commonly affected", "The long bones are more affected than the vertebrae and pelvis"], correct: ["A", "D"], exp: "Osteoporosis is defined as loss of normally mineralized bone mass per unit volume. Post-menopausal estrogen deficiency accelerates trabecular bone loss." },
+            { id: 76, text: "Aetiological factors in osteoporosis probably include:", options: ["Increased muscular activity", "Thyrotoxicosis", "Diminished ACTH production", "Inadequate intake of protein and Vit. C", "Diminished progesterone output"], correct: ["B", "D"], exp: "Excess thyroid hormone accelerates bone turnover/resorption. Malnutrition (low protein/vitamin C) impairs osteoid matrix synthesis." },
+            { id: 77, text: "In osteoporosis:", options: ["Most patients have severe bone pain", "The patient may present with fracture of the spine, neck of femur, neck of humerus or lower end of the radius", "There is progressive loss of height", "The serum alkaline phosphatase is elevated", "The serum calcium is depressed"], correct: ["B", "C"], exp: "Osteoporosis is silent until fragility fractures occur (distal radius, vertebral compression leading to loss of height, and proximal femur). Serum Ca, P, ALP are normal." },
+            { id: 78, text: "SPECIFIC treatment for osteoporosis includes:", options: ["Calcium 3g/day", "Large doses of Vit. C", "Thyroxine", "Bisphosphonates", "Oestrogens"], correct: ["D"], exp: "Bisphosphonates (antiresorptive agents) are first-line pharmacological treatment for osteoporosis to reduce fracture risk." },
+            { id: 79, text: "Paget's disease (osteitis deformans):", options: ["Is generalized affection of the skeleton in middle aged and elderly men but not women", "Is characterized by hardening of the bones", "Is caused by deficiency of testosterone", "May cause pathological fractures", "Becomes sarcomatous in about 25% of patients"], correct: ["D"], exp: "Disorganized hyperactive bone remodeling in Paget's leads to weak, enlarged, vascular bones prone to pathologic fractures and malignant transformation (<1% osteosarcoma)." },
+            { id: 80, text: "Paget's disease:", options: ["Is asymptomatic in most patients", "Leads to kyphosis and stooping", "Leads to genu valgum", "May result in cardiac failure because of frequently associated valvular affections", "May shorten the height"], correct: ["A", "B", "E"], exp: "Most Paget's cases are asymptomatic (incidental ALP elevation). Progressive bony softening leads to spinal compression (kyphosis), height loss, and bow legs." },
+            { id: 81, text: "In Paget's disease:", options: ["The serum alkaline phosphatase is markedly raised", "The serum phosphate is usually low", "The serum calcium is usually normal", "The affected bones on x-ray are dense, often deformed, narrow and contains cyst-like areas", "Calcitonin 50-100 i.u. intravenously daily for several months may arrest the disease"], correct: ["A", "C", "E"], exp: "Marked elevation of serum Alkaline Phosphatase reflects intense osteoblastic activity. Serum calcium/phosphate remain normal." },
+            { id: 82, text: "Clinical features in scurvy include:", options: ["Subperiosteal haematoma", "Fever", "Bleeding gums", "Sabre tibia", "Separation of the epiphyses"], correct: ["A", "C"], exp: "Vitamin C deficiency impairs collagen cross-linking, causing capillary fragility: Subperiosteal hematomas, swollen bleeding gums, and petechiae." },
+            { id: 83, text: "Rickets:", options: ["Is seen in children and adolescents", "Is in all patients caused by inadequate Vit. D intake", "Results in failure of calcification of osteoid to osseous bone", "Pathologically gives rise to a wide, thick cartilage zone of the epiphyseal growth plate", "Is now rare in the world because of routine administration of Vit. D to children"], correct: ["C", "D"], exp: "Rickets is impaired mineralization of osteoid matrix and growth plate cartilage in children, leading to unmineralized osteoid buildup and widened, disorganized physes." },
+            { id: 84, text: "Clinical features in rickets include:", options: ["Diarrhoea and vomiting", "Tetany", "Knock knees but not bow legs", "Thickening and widening of the wrists", "Bossing of the frontal, parietal, costal and phalangeal bones"], correct: ["B", "D"], exp: "Rachitic signs: Hypocalcemic tetany, physeal expansion (widened wrists), rachitic rosary, frontal bossing, and bow legs / knock knees." },
+            { id: 85, text: "In rickets:", options: ["The serum alkaline phosphatase is normal", "The serum phosphorous is usually low", "The blood urea may be elevated", "The urine phosphate may be elevated", "The faecal fat may be more than 6g daily"], correct: ["B", "C", "D", "E"], exp: "Secondary hyperparathyroidism in rickets increases renal phosphate excretion (phosphaturia), depressing serum phosphorus levels." },
+            { id: 86, text: "In the treatment of rickets:", options: ["Vit.D 1,000 i.u. given daily gives dramatic results", "The serum calcium, phosphate and alkaline phosphatase are checked monthly", "Hypocalcaemia or hypercalcaemia may occur", "Oral calcium 1g should be given daily", "Bony deformities may recover spontaneously"], correct: ["E"], exp: "With nutritional Vitamin D repletion and remineralization, minor rachitic angular bone deformities can remodel spontaneously in young growing children." },
+            { id: 87, text: "Osteomalacia:", options: ["Is uncommon and is generally seen in elderly women and rarely in pregnant or lactating women", "May deform the pelvis", "May complicate Billroth I partial gastrectomy", "Is confirmed by biopsy of the iliac crest", "Is treated with Vit. D 2,000 i.u. and calcium 1g daily"], correct: ["A", "B", "D"], exp: "Osteomalacia ('adult rickets') impairs osteoid mineralization, causing pelvic deformities (triradiate pelvis). Non-decalcified iliac crest bone biopsy is gold standard." },
+            { id: 88, text: "A 1-year old male child with swollen immobile limbs, restlessness, and bleeding gums. Diagnosis:", options: ["Sickle cell disease", "Acute poliomyelitis", "Scurvy", "Acute osteomyelitis", "Anaemia"], correct: ["C"], exp: "Infantile scurvy (Barlow's disease) presents with pseudoparalysis from painful subperiosteal hematomas, irritability, and hemorrhagic mucosal/gingival lesions." },
+            { id: 89, text: "Investigations that will be useful in establishing the diagnosis include:", options: ["Full blood count and sickling", "X-ray of the affected limbs", "Serum ascorbic acid", "Urinary excretion of ascorbic acid after a loading dose", "Blood culture"], correct: ["B", "D"], exp: "Radiographs show subperiosteal elevation/calcification and Frankel's line. Ascorbic acid vitamin loading excretion tests confirm Vitamin C deficiency." },
+            { id: 90, text: "Lumbar spinal epidural abscess:", options: ["Is fairly common", "Is a metastatic infection caused by staph. aureus", "Causes localized pain often with radicular radiation", "Causes rapidly developing spastic paraplegia and sphincteric incompetence", "Is evacuated through laminectomy under antibiotic cover"], correct: ["B", "C"], exp: "Metastatic S. aureus hematogenous spinal epidural abscess causes severe midline back pain, radicular shooting pain, and rapid neurological compression." },
+            { id: 91, text: "The correct posture when sitting is:", options: ["Feet flat on the ground", "Chest lifted", "Head low", "Shoulder relaxed", "Arm fully pronated"], correct: ["A", "B"], exp: "Ergonomic sitting posture requires feet resting flat on the floor, lumbar spine supported, chest lifted, and shoulders relaxed." },
+            { id: 92, text: "Bone changes in sickle cell disease include:", options: ["Enlarged costo-chondral junction", "Expansion of the diploe", "Platyspondyly", "Coxa vara", "Dactylitis"], correct: ["B", "C", "E"], exp: "SCD marrow hyperplasia expands skull diploë ('hair-on-end'). Microvascular infarction causes dactylitis (hand-foot syndrome) and vertebral body flattening (H-shaped vertebrae/platyspondyly)." },
+            { id: 93, text: "Osteomyelitis in sickle cell disease is characterized by:", options: ["Asymmetrical involvement of the bones", "Diaphyseal involvement", "Refraction to medical treatment in the early stages", "Multifocal distribution", "Severe septicaemia"], correct: ["B"], exp: "In contrast to classic pediatric osteomyelitis (metaphyseal), sicklers often develop osteomyelitis in the bone diaphysis secondary to bone marrow infarction." },
+            { id: 94, text: "In prolapse of lumbar intervertebral disc:", options: ["The annulus fibrosus is degenerated", "The anterior longitudinal ligament is frayed", "The nucleus pulposus herniates into the neural canal following an extension injury", "Sneezing may be a precipitation trauma", "The commonest site is L3-4"], correct: ["A", "D"], exp: "Disc herniation involves nucleus pulposus extruding through tears in a degenerated annulus fibrosus. Intrathecal pressure spikes (coughing/sneezing) trigger acute root compression." },
+            { id: 95, text: "A 40-year old man with lumbar pain radiating down right buttock, posterior thigh, calf to foot. Disc level:", options: ["L1-2", "L2-3", "L3-4", "L4-5", "L5-S1"], correct: ["E"], exp: "S1 nerve root radiculopathy (typically caused by L5-S1 disc herniation) characteristically radiates down the posterior thigh, gastrocnemius calf, and plantar foot/sole." },
+            { id: 96, text: "In prolapsed lumbar intervertebral disc:", options: ["Paraesthesia, hyper and hyposensitivity in a dermatome area may occur", "Impairment of tendon reflex is unusual", "Sphincteric disturbance is common", "Muscle atrophy may occur", "Lasegue's sign is negative"], correct: ["A"], exp: "Nerve root compression produces sensory dermatomal alterations (numbness, paresthesias, hyperesthesia)." },
+            { id: 97, text: "In spondylosis:", options: ["The nucleus pulposus shrinks as a result of progressive decrease in its water content", "There is degeneration of the cartilaginous plates over the vertebral bodies", "The annulus fibrosis remains intact", "Pain is centered in the spine and associated with stiffness and limitation of spinal movements", "X-ray shows narrowing of the intervertebral joints and new bone formation at the periphery"], correct: ["A", "B", "D", "E"], exp: "Spinal spondylosis involves age-related disc desiccation/dehydration, cartilaginous endplate sclerosis, loss of disc height, marginal osteophytosis, and axial spinal stiffness." },
+            { id: 98, text: "Ankylosing spondylitis:", options: ["Is uncommon in West Africans and in Caucasians is more common in young adult females", "Is characterized by calcification and subsequent ossifications of the ligaments and capsule of the joints", "Starts in the thoracic intervertebral joints and spreads downwards to the lumbosacral and sacro-iliac joints", "Gives rise to pain and stiffness worse in the morning and after a period of rest", "Leads to extension deformity of the spine and the ESR is markedly raised"], correct: ["B", "D"], exp: "Ankylosing spondylitis (HLA-B27 associated) features enthesitis, capsular/ligamentous ossification ('bamboo spine'), and inflammatory back pain worse in morning/rest." },
+            { id: 99, text: "Severe low back pain in a 40-year old woman, which is not relieved by rest in bed, may be due to:", options: ["Faulty posture on standing and sitting", "Complete rupture of an interspinous ligament", "Cervicitis", "Anxiety neurosis", "Vertebral metastatic carcinoma from the breast"], correct: ["C", "D", "E"], exp: "Non-mechanical back pain unaffected by rest or position strongly signals sinister red flag etiology (malignant vertebral metastasis) or pelvic referred visceral pathology." },
+            { id: 100, text: "Investigations that must be done in every patient with low back pain are:", options: ["Plain x-ray of thoracic, lumbar and sacral spine", "Tomogram", "Myelogram", "ESR", "Serum alkaline phosphatase"], correct: ["A", "D", "E"], exp: "Baseline initial evaluation for chronic/severe back pain: Plain spinal radiographs, inflammatory markers (ESR), and bone metabolic markers (ALP)." },
+            { id: 101, text: "Measures taken in the management of muscular or ligamentous strain of the spine include:", options: ["Rest in bed", "Short wave diathermy and massage", "Wearing of surgical corset", "Operative exploration", "Muscle strengthening exercises"], correct: ["B", "C", "E"], exp: "Conservative lumbar strain management focus: Physical therapy modalities (heat/diathermy), temporary lumbar support corsets, and core muscle strengthening." },
+            { id: 102, text: "Cancellous osteoma:", options: ["Is a true tumour", "Is found commonly at the end of long bones", "Continues to grow throughout life", "May undergo malignant change", "Is usually symptomless"], correct: ["B", "E"], exp: "Exostoses/cancellous osteomas occur near juxta-epiphyseal ends of long bones and are benign, usually asymptomatic lesions." },
+            { id: 103, text: "Compact (ivory) osteoma:", options: ["Arises in any bone", "Is sessile and slow-growing", "Is painful", "Is covered by a cap of cartilage", "May cause epilepsy if it involves the inner table of the skull"], correct: ["B", "E"], exp: "Ivory osteomas are dense benign skull/facial bone lesions. Intracranial extension from the inner skull table can exert focal mass effect, causing seizures." },
+            { id: 104, text: "Osteochondroma:", options: ["Is mushroom in shape, pedunculated or sessile", "Has a growing cap of cartilage", "Is most probably malignant if it continues to grow after skeletal maturity", "Changes to osteo-chondrosarcoma in about 25% of patients", "Should be left alone if it is near the trunk, e.g. scapula or pelvis, as it is not likely to become malignant"], correct: ["A", "B", "C"], exp: "Osteochondromas are cartilage-capped bony exostoses. Persistent growth or cartilage cap thickening (>1.5 cm) after skeletal maturity suggests malignant transformation." },
+            { id: 105, text: "Osteoclastoma (Giant Cell Tumor of Bone):", options: ["Arises at the junction of the epiphysis and the metaphysis and spreads to the epiphysis", "Normally penetrates into the joint", "Is a spindle-cell tumour with giant cells formed by coalescence of some of the spindle cells", "Is benign in 50% and frankly malignant in 15% of cases, and the rest though benign recur after removal", "Affects the 10-20 age group"], correct: ["A", "C", "D"], exp: "Giant cell tumor arises in epiphyseal-metaphyseal regions of mature bones (skeletally mature adults 20-40). Characterized by multinucleated giant cells; high local recurrence." },
+            { id: 106, text: "The common sites of osteoclastoma include the:", options: ["Scapula", "Lower end of the femur", "Lower end of the tibia", "Pelvis", "Lower end of the radius"], correct: ["B"], exp: "The most common anatomical location for Giant Cell Tumor is the knee region (distal femur and proximal tibia)." },
+            { id: 107, text: "Treatment of osteoclastoma may be by:", options: ["Amputation", "Excision", "Curettage and bone graft", "Radiotherapy", "Cytotoxic therapy"], correct: ["A", "B", "C", "D"], exp: "Surgical options range from intralesional curettage with bone grafting/cementation to wide en-bloc resection or amputation for aggressive/recurrent lesions." },
+            { id: 108, text: "Enchondroma:", options: ["Is a true tumour arising usually in the metaphysis or shaft of the short long bones of the hand or feet", "Is usually seen in children", "May produce a pathological fracture", "Shows on x-ray as a sclerotic zone within the bone with cortical ballooning", "Is treated by excision"], correct: ["C"], exp: "Enchondromas are benign intramedullary hyaline cartilage tumors of tubular hand/foot bones, often presenting acutely following pathologic fracture." },
+            { id: 109, text: "Benign chondroblastoma:", options: ["Is seen in adolescents under 20yrs", "Is more common in females", "Histologically consists of young cartilage cells with areas of giant cell transformation, myxoid and collagenous cells", "Starts in the epiphysis", "May rarely recur after excision or curettage and show malignant characteristics"], correct: ["A", "C", "D", "E"], exp: "Chondroblastoma is a rare benign epiphyseal cartilaginous tumor occurring in skeletally immature adolescents (<20 yrs)." },
+            { id: 110, text: "Bone 'swellings' originating from osteoblast include:", options: ["Fibrous osteoma", "Ossifying fibroma", "Osteochondroma", "Aneurysmal bone cyst", "Osteoclastoma"], correct: ["A", "C", "E"], exp: "Osteoblast-lineage derivative skeletal proliferations include osteomas, osteoid osteoma/osteoblastoma variants." },
+            { id: 111, text: "A simple bone cyst (Unicameral Bone Cyst):", options: ["Is common in children but rare in adults", "May involve any bone", "Arises in the epiphysis", "Is usually symptomless", "Is treated by excision"], correct: ["A", "B", "D"], exp: "UBCs are fluid-filled metaphyseal lesions in growing children (proximal humerus/femur), usually asymptomatic until presenting with pathological fracture." },
+            { id: 112, text: "A solitary radiolucent lesion in the metaphysis of the femur in a boy 15 may be:", options: ["Non-ossifying fibroma", "Chondroma", "Osteoclastoma", "Solitary bone cyst", "Benign chondroblastoma"], correct: ["A", "B", "D", "E"], exp: "Differential diagnosis for pediatric metaphyseal lytic lesions: Non-ossifying fibroma (NOF), solitary bone cyst, enchondroma, or extension of chondroblastoma." },
+            { id: 113, text: "Osteosarcoma:", options: ["Is the commonest bone tumour", "Is usually metaphyseal in origin", "Contains elements of bone and cartilage but not of fibrous tissue", "Arises from primitive spindle cells", "Does not arise from extra-osseous tissue"], correct: ["B", "D"], exp: "Osteosarcoma is a primary malignant spindle cell neoplasm originating in long bone metaphyses, characterized by production of malignant osteoid matrix." },
+            { id: 114, text: "Osteosarcoma may arise from:", options: ["Cancellous osteoma", "Enchondroma", "Osteochondroma", "Osteitis deformans", "Ossifying fibroma"], correct: ["C", "D"], exp: "Secondary osteosarcoma can arise in Paget's disease of bone (osteitis deformans) or via malignant transformation of an osteochondroma." },
+            { id: 115, text: "Osteosarcoma spreads mainly to the:", options: ["Lymph nodes", "Liver", "Lungs", "Brain", "Other bones"], correct: ["C"], exp: "Osteosarcoma metastasizes predominantly hematogenously, with the lungs being the primary and most frequent early site of metastasis." },
+            { id: 116, text: "Osteosarcoma:", options: ["Has a peak incidence in the first decade", "Occurs around the knee in 50% of patients", "Has a male/female ratio of 1.5/1", "Does not present with pathological fracture", "Presents with a painful, tender, warm swelling"], correct: ["C", "E"], exp: "Osteosarcoma shows slight male predominance and presents with a rapidly expanding, painful, warm, vascular soft tissue mass." },
+            { id: 117, text: "Radiological features of osteosarcoma include:", options: ["Diaphyseal bone destruction", "Soft tissue mass or bone formation", "Radiate bone spicules of the cortex in the affected area", "Dense sclerosis of the rest of the bone", "Triangular condensation of bone at the site of periosteal elevation"], correct: ["B", "C", "E"], exp: "Radiographic features: Mixed lytic/blastic lesion, Codman's triangle (periosteal elevation), and 'sunburst' cortical spiculation extending into soft tissue mass." },
+            { id: 118, text: "The most essential investigation after establishing a diagnosis of osteosarcoma is:", options: ["Skeletal survey", "X-ray of the lungs", "Blood profile", "E.S.R", "Serum alkaline phosphate"], correct: ["B"], exp: "Chest CT / CXR staging is paramount immediately post-diagnosis to detect pulmonary metastases, which dictate prognosis and treatment stratification." },
+            { id: 119, text: "The present acceptable forms of treatment of osteosarcoma include:", options: ["Amputation followed by cyclical combination cytotoxic therapy", "Radiotherapy followed by amputation", "Cytotoxic therapy followed by local resection", "Amputation", "Cyclical combination cytotoxic chemotherapy"], correct: ["A", "C"], exp: "Standard of care: Neoadjuvant multi-agent chemotherapy -> Wide surgical resection (limb-salvage or amputation) -> Adjuvant chemotherapy." },
+            { id: 120, text: "Cytotoxic drugs currently used in the treatment of osteosarcoma include:", options: ["Methotrexate", "Actinomycin D", "Vincristine", "Cyclophosphamide", "Doxorubicin"], correct: ["A", "C", "D", "E"], exp: "Effective chemotherapy regimens for osteosarcoma utilize high-dose Methotrexate, Doxorubicin (Adriamycin), Cisplatin, and Cyclophosphamide/Ifosfamide." },
+            { id: 121, text: "An x-ray shows a disappearing bone. The conditions to consider include:", options: ["Osteoclastoma", "Aneurysmal bone cyst", "Angiosarcoma", "Neurofibromatosis", "Histoplasmosis duboisii"], correct: ["B", "C", "D", "E"], exp: "Rapidly osteolytic or osteolysis-inducing conditions ('phantom bone'): Aneurysmal bone cyst, angiosarcoma / Gorham's disease, neurofibromatosis, and fungal osteomyelitis." },
+            { id: 122, text: "A 50-year old man with recurrent rib pain; X-rays show multiple punched-out lytic skull/pelvic lesions. You consider:", options: ["Metastases from carcinoma of the prostate", "Metastases from the thyroid", "Multiple myeloma", "Bronchogenic carcinoma", "Ewing's tumour"], correct: ["B", "C"], exp: "Punched-out non-expanded lytic bone lesions in an adult >50 are classic for Multiple Myeloma or osteolytic metastases (such as thyroid or renal carcinoma)." },
+            { id: 123, text: "The investigation that will be helpful include:", options: ["Full blood count", "Biopsy", "Serum acid phosphatase", "Bence-Jones proteinuria", "Thyroid scan"], correct: ["A", "B", "D"], exp: "Workup for suspected multiple myeloma: Serum/urine protein electrophoresis for paraprotein / Bence-Jones light chains, bone marrow biopsy, and FBC (anemia)." },
+            { id: 124, text: "An x-ray of the shaft of the femur in a 10-year old boy showing an 'onion peel' appearance is indicative of:", options: ["Multiple myeloma", "Osteoclastoma", "Fibrosarcoma", "Syphilitic periostitis", "Ewing's tumour"], correct: ["E"], exp: "'Onion-skin' multilayered periosteal reaction in the diaphysis of a child is the classic radiographic sign of Ewing's sarcoma." },
+            { id: 125, text: "Multiple myeloma:", options: ["Originates from plasma cell", "Is twice as common in women", "May present as paraplegia, severe anaemia or pathological fracture", "Is confirmed by x-ray of the bones", "Is radiosensitive"], correct: ["A", "C"], exp: "Multiple myeloma is a monoclonal neoplastic proliferation of plasma cells causing anemia, pathologic fractures, hypercalcemia, and spinal cord compression." },
+            { id: 126, text: "Ewing's tumour:", options: ["Occurs mostly in the age group 20-30 years", "Is twice as common in women", "May present as paraplegia, severe anaemia or pathologic fracture", "Is confirmed by x-ray of the bones", "Is radiosensitive"], correct: ["B", "C"], exp: "Ewing's sarcoma is a highly radiosensitive neuroectodermal small round cell tumor occurring in children/young adults, often presenting with pain, systemic fever, and pathologic fractures." },
+            { id: 127, text: "A 30-year old woman with eggshell lytic swelling at proximal fibula. Most likely diagnosis:", options: ["Solitary bone cyst", "Ewing's tumour", "Enchondroma", "Haemangioma", "Osteoclastoma"], correct: ["E"], exp: "Giant cell tumor (osteoclastoma) produces an eccentric, lytic epiphyseal-metaphyseal lesion with cortical thinning creating an 'eggshell' bony expansion." },
+            { id: 128, text: "The treatment of choice is:", options: ["Radiotherapy", "Curettage and bone grafting", "Above-knee amputation", "Excision of the upper end of the fibula", "Leave alone"], correct: ["D"], exp: "For GCT located in expendable bones like the proximal fibula, complete en-bloc resection avoids recurrence risk while preserving knee joint function." },
+            { id: 129, text: "In DeQuervain's disease the following is/are involved:", options: ["Abductor pollicis brevis", "Extensor pollicis brevis", "Radial tubercle", "Flexor carpi radialis", "Abductor pollicis longus"], correct: ["B", "E"], exp: "de Quervain's stenosing tenosynovitis involves the tendons of the first dorsal compartment: Extensor Pollicis Brevis (EPB) and Abductor Pollicis Longus (APL)." },
+            { id: 130, text: "In trigger finger:", options: ["The sheath of the long flexor is affected", "There is nodular thickening of the sheath", "The nodular thickening is opposite the middle part of the shaft of the metacarpus", "There is a sudden snap as the affected finger is flexed", "The treatment of choice is to slit the sheath"], correct: ["B", "E"], exp: "Trigger finger (stenosing flexor tenosynovitis) features nodular thickening of flexor tendon at the A1 pulley; definitive release involves slitting the A1 pulley sheath." },
+            { id: 131, text: "In carpal tunnel syndrome:", options: ["The male/female ratio is 1/10", "The pain occurs mainly at night and is also aggravated by washing, sewing or writing", "The cause is compression of the ulnar nerve beneath the flexor retinaculum", "The thenar muscles may be wasted", "Injection of hydrocortisone in xylocaine into the space has not been found beneficial"], correct: ["B", "D"], exp: "Median nerve compression under transverse carpal ligament produces nocturnal paresthesias and advanced thenar abductor pollicis brevis atrophy." },
+            { id: 132, text: "Tennis elbow (Lateral Epicondylitis):", options: ["Is pain on the outer side of the elbow", "The pain occurs mainly at night and is also aggravated by washing, sewing or writing", "The cause is compression of the ulnar nerve beneath the flexor retinaculum", "The thenar muscles may be wasted", "Injection of hydrocortisone in xylocaine into the space has not been found beneficial"], correct: ["A"], exp: "Tennis elbow is epicondylar tendinopathy at the origin of Extensor Carpi Radialis Brevis (ECRB), causing lateral elbow pain provoked by resisted wrist extension." },
+            { id: 133, text: "Mallet finger:", options: ["Is partial flexion deformity of the distal interphalangeal joint", "Is caused by rupture of the middle slip of the extensor tendon expansion of the finger", "Is painful", "If seen within a week should be treated by immobilization of the finger with the tendon relaxed", "If old should be ignored"], correct: ["A"], exp: "Mallet finger is loss of active DIP joint extension, presenting as a fixed or dynamic flexion deformity of the terminal phalanx." },
+            { id: 134, text: "A 55-year old man with sudden shoulder pain unable to actively abduct, but retains abduction past 90° passively. Diagnosis:", options: ["Pericapsulitis of the shoulder", "Osteoarthritis of the shoulder", "Complete tear of the supraspinatus tendon", "Fracture of the lateral end of the clavicle", "Fracture of the greater tuberosity of the humerus"], correct: ["C"], exp: "Inability to initiate active abduction combined with maintenance of abduction once elevated past 90° is pathognomonic for complete supraspinatus tear." },
+            { id: 135, text: "Acute tendinitis of the shoulder:", options: ["Occurs at all ages", "Is associated with a calcareous deposit above the greater tuberosity of the humerus", "Causes sudden intense pain in the shoulder", "May be associated with fever", "Is treated by local injection of hydrocortisone in xylocaine or oral phenylbutazone and a course of antibiotics"], correct: ["B", "C"], exp: "Calcific tendinitis (hydroxyapatite deposition in supraspinatus tendon) causes acute, severe hyperalgesic shoulder pain." },
+            { id: 136, text: "Pericapsulitis or frozen shoulder syndrome (Adhesive Capsulitis):", options: ["Is a condition in which there is spontaneous onset of shoulder pain accompanied by increasing severe limitation of shoulder movements", "Occurs in the 40-60 age group", "Is associated with a friable joint capsule which shows fibrosis, increase in heparin and chondroitin and decrease in hyaluronic acid", "Runs a short course of about a fortnight", "Is treated by local injection of hydrocortisone in xylocaine"], correct: ["A", "B", "E"], exp: "Adhesive capsulitis (aged 40-60, common in diabetics) presents with progressive global painful restriction of passive and active glenohumeral motion; intra-articular steroid injections assist recovery." },
+            { id: 137, text: "Ruptured tendo-Achilles:", options: ["Is caused by degeneration in the tendon", "Is usually seen in the elderly", "Gives rise to swollen heel", "Does not affect walking", "Is best sutured"], correct: ["C", "D", "E"], exp: "Achilles rupture occurs into hypovascular tendinopathic tissue, producing local swelling, palpable gap, loss of tip-toe push-off, and benefits from surgical repair in active patients." },
+            { id: 138, text: "Dupuytren's contracture:", options: ["Is fibrous replacement and contracture of the palmar aponeurosis with flexion deformity of the distal palm and fingers", "Is caused by trauma and is often familial", "Occurs most frequently in the aponeurosis proximal to the index and middle fingers", "Is frequently bilateral", "Is equally common in the sexes"], correct: ["A", "D"], exp: "Dupuytren's disease is palmar fibromatosis causing nodular thickening and fixed flexion contractures of MCP/PIP joints (ring/little fingers), frequently bilateral." },
+            { id: 139, text: "Ainhum (Dactylysis Spontanea):", options: ["Occurs in all races", "Is a progressive deepening constricting groove which encircles the base of a toe", "Affects the second toe most commonly", "Is caused by infection", "May result in auto-amputation"], correct: ["B", "E"], exp: "Ainhum is a idiopathic constricting fibrous band encircling the digit base (predominantly 5th toe in individuals of African descent), causing spontaneous auto-amputation." },
+            { id: 140, text: "A 50yr woman with history of breast cancer presents with osteolytic proximal femur lesion. Appropriate investigations:", options: ["Computer Tomography (CT) scans of the chest", "Magnetic Resonance Image (MRI) of the femur", "Bone scintigraphy", "Serum Calcium levels", "Open Biopsy of the lesion"], correct: ["A", "C", "D"], exp: "Staging metastatic bone disease requires CT chest/abdomen/pelvis, radionuclide whole-body bone scan, and checking for hypercalcemia of malignancy." },
+            { id: 141, text: "Treatment of this patient will involve:", options: ["Cyclical chemotherapy", "External beam radiotherapy to the femur", "Intravenous zolendronic acid", "Wide local excision of the tumour", "Prophylactic stabilization of the femur if there is a risk of a pathological fracture"], correct: ["B", "C", "D"], exp: "Management of bone metastasis: Bisphosphonates (zoledronic acid) to inhibit osteolysis, local radiotherapy, and prophylactic intramedullary fixation for impulsion risk." },
+            { id: 142, text: "An 8-year-old sickle cell patient with severe shoulder pain, high fever 39.5°C. Differential diagnosis:", options: ["Septic arthritis of the shoulder", "Acute osteomyelitis of the proximal humerus", "Sickle cell bone pain crises", "Non accidental fracture of the proximal humerus", "Malaria"], correct: ["A", "B", "D"], exp: "Acute high fever and localized joint/bone pain in a pediatric sickler warrants ruling out septic arthritis, acute osteomyelitis, or non-accidental trauma." },
+            { id: 143, text: "Comment on diagnostic workup:", options: ["A normal x-ray of the shoulder excludes the diagnosis of osteomyelitis", "An ultrasound of the shoulder joint will differentiate fluid collection in the shoulder joint from septic arthritis of the joint", "A normal Erythrocyte Sedimentation Rate (ESR) completely rules out an infectious process", "The most likely organism to be cultured from the blood is staphylococcus spp", "Blood cultures will be positive in about 60% of such cases"], correct: ["B", "D"], exp: "Ultrasonography reliably identifies joint effusion in septic arthritis. Staphylococcus aureus remains the primary pathogen across pediatric bone/joint sepsis." },
+            { id: 144, text: "Further management after diagnosis of septic arthritis of the shoulder:", options: ["Needle aspiration of the shoulder joint and a two week course of intravenous antibiotics", "Arthrotomy and washout of the joint and a total of six weeks of antibiotics", "Application of a shoulder Spica to rest the joint for six weeks", "Instillation of antibiotics into the joint has been found to be very useful in eradicating the infection", "The C-reactive protein (CRP) is used to monitor the long-term response to your treatment."], correct: ["B"], exp: "Septic arthritis is a surgical emergency: Urgent arthrotomy/arthroscopic joint debridement and washout paired with 4-6 weeks of targeted systemic intravenous antibiotics." },
+            { id: 145, text: "Complications of joint sepsis include:", options: ["Shoulder stiffness", "Avascular necrosis of the humeral head", "Osteoarthritis of the shoulder joint", "Ankylosis of the shoulder joint", "Myositis ossificans of the shoulder"], correct: ["A", "C", "D"], exp: "Enzymatic articular cartilage destruction in septic arthritis leads to permanent joint stiffness, secondary osteoarthritis, and fibrous/bony joint ankylosis." },
+            { id: 146, text: "Management workup for suspected tibial osteosarcoma in 12yr boy:", options: ["CT scan of the chest", "MRI of the tibia", "Serum calcium levels", "Radioisotope bone scan", "Biopsy of the lesion"], correct: ["A", "B", "D", "E"], exp: "Staging osteosarcoma requires local MRI for intramedullary/soft tissue spread, CT chest for lung metastases, bone scan for skip lesions, and diagnostic biopsy." },
+            { id: 147, text: "Achondroplasia:", options: ["Is the most common form of disproportionate dwarfism", "Autosomal dominance inheritance", "Lumbar stenosis is the most likely cause of disability", "Defect in hypertrophic zone of physis", "Trident hand is a characteristic feature"], correct: ["A", "B", "C", "E"], exp: "Achondroplasia features FGFR3 autosomal dominant inheritance, short-limbed dwarfism, trident hands, and spinal stenosis secondary to narrow pedicle distance." },
+            { id: 148, text: "Rickets:", options: ["It's a defect in the mineralization of physis", "Low calcium is a characteristic feature", "Vitamin-D resistant rickets is X-linked dominant", "Physeal cupping is characteristic in x-rays", "Vit-D treatment resolves most deformities"], correct: ["A", "C", "D", "E"], exp: "Rickets pathologically impairs physeal mineralization, causing classic X-ray metaphyseal cupping, widening, and splaying. XLH rickets is X-linked dominant." },
+            { id: 149, text: "Club foot deformities have the following components:", options: ["Forefoot pronation", "Forefoot supination", "Ankle equinus", "Hind-foot varus", "Mid-foot recurvatum"], correct: ["B", "C", "D"], exp: "Congenital Talipes Equinovarus (CTEV) structural deformity features forefoot supination/adduction, hindfoot varus, and ankle equinus." },
+            { id: 150, text: "Hallux valgus:", options: ["Is common amongst elderly men", "Has a genetic predisposition", "Can occur in adolescent girls", "Is bilateral in 50% of cases", "Is always treated by surgery"], correct: ["B", "C", "D"], exp: "Hallux valgus (lateral deviation of great toe) has strong female/hereditary predisposition, frequently affects adolescent girls, and is bilateral in ~50% of cases." }
+        ];
+
+        // Global State Manager
+        const state = {
+            currentChapter: 53, // 53 or 54
+            currentIndex: 0,
+            filter: 'all', // all, unanswered, correct, incorrect
+            searchQuery: '',
+            userAnswers: {
+                53: {}, // { qId: { selected: ['A', 'B'], checked: true, isCorrect: true } }
+                54: {}
+            },
+            darkMode: false
+        };
+
+        // DOM Element Caches
+        const elements = {
+            chap53Btn: document.getElementById('chap53Btn'),
+            chap54Btn: document.getElementById('chap54Btn'),
+            questionGrid: document.getElementById('questionGrid'),
+            mcqContainer: document.getElementById('mcqContainer'),
+            statAnswered: document.getElementById('statAnswered'),
+            statCorrect: document.getElementById('statCorrect'),
+            statIncorrect: document.getElementById('statIncorrect'),
+            scorePercentBadge: document.getElementById('scorePercentBadge'),
+            scoreProgressBar: document.getElementById('scoreProgressBar'),
+            searchInput: document.getElementById('searchInput'),
+            gridCountDisplay: document.getElementById('gridCountDisplay'),
+            themeToggleBtn: document.getElementById('themeToggleBtn'),
+            themeIcon: document.getElementById('themeIcon'),
+            resetAppBtn: document.getElementById('resetAppBtn')
+        };
+
+        // Local Storage Utilities
+        function loadState() {
+            const saved = localStorage.getItem('ortho_mcq_state');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    state.userAnswers = parsed.userAnswers || state.userAnswers;
+                    state.currentChapter = parsed.currentChapter || 53;
+                    state.darkMode = parsed.darkMode || false;
+                } catch(e) {
+                    console.error("Failed loading state", e);
+                }
+            }
+            if (state.darkMode) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem('ortho_mcq_state', JSON.stringify({
+                userAnswers: state.userAnswers,
+                currentChapter: state.currentChapter,
+                darkMode: state.darkMode
+            }));
+        }
+
+        function getCurrentDataSet() {
+            return state.currentChapter === 53 ? RAW_DATA_CH53 : RAW_DATA_CH54;
+        }
+
+        function getFilteredQuestions() {
+            const dataset = getCurrentDataSet();
+            const answers = state.userAnswers[state.currentChapter] || {};
+
+            return dataset.filter((q, idx) => {
+                const qAns = answers[q.id];
+                
+                // Filter by Status
+                if (state.filter === 'unanswered' && qAns && qAns.checked) return false;
+                if (state.filter === 'correct' && (!qAns || !qAns.checked || !qAns.isCorrect)) return false;
+                if (state.filter === 'incorrect' && (!qAns || !qAns.checked || qAns.isCorrect)) return false;
+
+                // Filter by Search Query
+                if (state.searchQuery) {
+                    const query = state.searchQuery.toLowerCase();
+                    const qNum = (idx + 1).toString();
+                    const textMatch = q.text.toLowerCase().includes(query);
+                    const numMatch = qNum === query || (`q${qNum}` === query);
+                    const optMatch = q.options.some(o => o.toLowerCase().includes(query));
+                    return textMatch || numMatch || optMatch;
+                }
+
+                return true;
+            });
+        }
+
+        // Initialize UI & Bind Events
+        function initApp() {
+            loadState();
+            setupEventListeners();
+            switchChapter(state.currentChapter, false);
+            lucide.createIcons();
+        }
+
+        function setupEventListeners() {
+            // Theme toggle
+            elements.themeToggleBtn.addEventListener('click', () => {
+                state.darkMode = !state.darkMode;
+                document.documentElement.classList.toggle('dark', state.darkMode);
+                saveState();
+            });
+
+            // Reset App
+            elements.resetAppBtn.addEventListener('click', () => {
+                if (confirm('Are you sure you want to reset all recorded progress for both chapters?')) {
+                    state.userAnswers = { 53: {}, 54: {} };
+                    saveState();
+                    renderAll();
+                }
+            });
+
+            // Chapter Tabs
+            elements.chap53Btn.addEventListener('click', () => switchChapter(53));
+            elements.chap54Btn.addEventListener('click', () => switchChapter(54));
+
+            // Search
+            elements.searchInput.addEventListener('input', (e) => {
+                state.searchQuery = e.target.value.trim();
+                renderMatrix();
+            });
+
+            // Filter Buttons
+            document.querySelectorAll('.filter-pill').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.filter-pill').forEach(b => {
+                        b.classList.remove('bg-brand-600', 'text-white');
+                        b.classList.add('bg-slate-100', 'dark:bg-slate-700', 'text-slate-600', 'dark:text-slate-300');
+                    });
+                    e.target.classList.remove('bg-slate-100', 'dark:bg-slate-700', 'text-slate-600', 'dark:text-slate-300');
+                    e.target.classList.add('bg-brand-600', 'text-white');
+
+                    state.filter = e.target.dataset.filter;
+                    renderMatrix();
+                });
+            });
+        }
+
+        function switchChapter(chapNum, resetIndex = true) {
+            state.currentChapter = chapNum;
+            if (resetIndex) state.currentIndex = 0;
+
+            // Update Tab UI
+            if (chapNum === 53) {
+                elements.chap53Btn.className = "chap-tab-btn py-2 px-3 text-xs font-bold rounded-lg shadow-sm bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-400";
+                elements.chap54Btn.className = "chap-tab-btn py-2 px-3 text-xs font-semibold rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white";
+            } else {
+                elements.chap54Btn.className = "chap-tab-btn py-2 px-3 text-xs font-bold rounded-lg shadow-sm bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-400";
+                elements.chap53Btn.className = "chap-tab-btn py-2 px-3 text-xs font-semibold rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white";
+            }
+
+            saveState();
+            renderAll();
+        }
+
+        function renderAll() {
+            updateStats();
+            renderMatrix();
+            renderQuestion();
+        }
+
+        function updateStats() {
+            const dataset = getCurrentDataSet();
+            const answers = state.userAnswers[state.currentChapter] || {};
+            const total = dataset.length;
+            let answeredCount = 0;
+            let correctCount = 0;
+
+            dataset.forEach(q => {
+                const ans = answers[q.id];
+                if (ans && ans.checked) {
+                    answeredCount++;
+                    if (ans.isCorrect) correctCount++;
+                }
+            });
+
+            const incorrectCount = answeredCount - correctCount;
+            const percentage = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+
+            elements.statAnswered.textContent = `${answeredCount}/${total}`;
+            elements.statCorrect.textContent = correctCount;
+            elements.statIncorrect.textContent = incorrectCount;
+            elements.scorePercentBadge.textContent = `${percentage}%`;
+            elements.scoreProgressBar.style.width = `${percentage}%`;
+        }
+
+        function renderMatrix() {
+            const dataset = getCurrentDataSet();
+            const filtered = getFilteredQuestions();
+            const answers = state.userAnswers[state.currentChapter] || {};
+
+            elements.gridCountDisplay.textContent = `${filtered.length} of ${dataset.length}`;
+            elements.questionGrid.innerHTML = '';
+
+            dataset.forEach((q, idx) => {
+                const isFilteredIn = filtered.some(fq => fq.id === q.id);
+                if (!isFilteredIn) return;
+
+                const ans = answers[q.id];
+                const btn = document.createElement('button');
+                btn.textContent = idx + 1;
+
+                let classNames = "h-9 text-xs font-semibold rounded-lg border transition flex items-center justify-center ";
+                
+                if (idx === state.currentIndex) {
+                    classNames += "ring-2 ring-brand-500 ring-offset-2 dark:ring-offset-slate-800 ";
+                }
+
+                if (ans && ans.checked) {
+                    if (ans.isCorrect) {
+                        classNames += "bg-emerald-500 text-white border-emerald-600 hover:bg-emerald-600";
+                    } else {
+                        classNames += "bg-rose-500 text-white border-rose-600 hover:bg-rose-600";
+                    }
+                } else {
+                    classNames += "bg-slate-100 dark:bg-slate-700/60 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-600 hover:bg-slate-200 dark:hover:bg-slate-600";
+                }
+
+                btn.className = classNames;
+                btn.addEventListener('click', () => {
+                    state.currentIndex = idx;
+                    renderAll();
+                });
+
+                elements.questionGrid.appendChild(btn);
+            });
+        }
+
+        function renderQuestion() {
+            const dataset = getCurrentDataSet();
+            if (state.currentIndex >= dataset.length) state.currentIndex = 0;
+            const q = dataset[state.currentIndex];
+            const qAns = (state.userAnswers[state.currentChapter] || {})[q.id] || { selected: [], checked: false };
+            const isMulti = q.correct.length > 1;
+
+            const letterMap = ['A', 'B', 'C', 'D', 'E'];
+
+            let html = `
+                <div>
+                    <!-- Top Badge Meta Bar -->
+                    <div class="flex flex-wrap items-center justify-between gap-2 pb-4 mb-4 border-b border-slate-100 dark:border-slate-700">
+                        <div class="flex items-center gap-2">
+                            <span class="px-2.5 py-1 text-xs font-bold rounded-lg bg-brand-100 text-brand-700 dark:bg-brand-950 dark:text-brand-300">
+                                Chapter ${state.currentChapter}
+                            </span>
+                            <span class="text-xs font-semibold text-slate-400">
+                                Question ${state.currentIndex + 1} of ${dataset.length}
+                            </span>
+                        </div>
+                        <span class="px-2.5 py-1 text-xs font-semibold rounded-lg ${isMulti ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300' : 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300'}">
+                            ${isMulti ? `<i data-lucide="check-square" class="inline w-3 h-3 mr-1"></i> Multiple Answers (${q.correct.length})` : `<i data-lucide="circle-dot" class="inline w-3 h-3 mr-1"></i> Single Choice`}
+                        </span>
+                    </div>
+
+                    <!-- Question Prompt text -->
+                    <h2 class="text-base sm:text-lg font-semibold text-slate-900 dark:text-slate-100 leading-relaxed mb-6">
+                        ${q.text}
+                    </h2>
+
+                    <!-- Options List -->
+                    <div class="space-y-3 mb-6">
+            `;
+
+            q.options.forEach((optText, oIdx) => {
+                const letter = letterMap[oIdx];
+                const isSelected = qAns.selected.includes(letter);
+                const isCorrectOption = q.correct.includes(letter);
+
+                let optionClass = "w-full text-left p-3.5 sm:p-4 rounded-xl border text-sm flex items-start gap-3 transition cursor-pointer ";
+                let inputType = isMulti ? "checkbox" : "radio";
+                
+                if (qAns.checked) {
+                    if (isCorrectOption) {
+                        optionClass += "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500 text-emerald-950 dark:text-emerald-200 font-medium";
+                    } else if (isSelected && !isCorrectOption) {
+                        optionClass += "bg-rose-50 dark:bg-rose-950/40 border-rose-500 text-rose-950 dark:text-rose-200";
+                    } else {
+                        optionClass += "bg-slate-50 dark:bg-slate-900/40 border-slate-200 dark:border-slate-700 opacity-60";
+                    }
+                } else {
+                    if (isSelected) {
+                        optionClass += "bg-brand-50 dark:bg-brand-950/40 border-brand-500 text-brand-900 dark:text-brand-100 font-medium shadow-sm";
+                    } else {
+                        optionClass += "bg-slate-50/60 dark:bg-slate-900/40 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50";
+                    }
+                }
+
+                html += `
+                    <div class="${optionClass}" onclick="toggleOption('${letter}', ${isMulti}, ${qAns.checked})">
+                        <div class="mt-0.5">
+                            <input type="${inputType}" name="mcqOption" ${isSelected ? 'checked' : ''} ${qAns.checked ? 'disabled' : ''} class="w-4 h-4 text-brand-600 border-slate-300 rounded focus:ring-brand-500">
+                        </div>
+                        <div class="flex-1">
+                            <span class="font-bold mr-1">${letter}.</span> ${optText}
+                        </div>
+                        ${qAns.checked && isCorrectOption ? `<i data-lucide="check-circle" class="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0"></i>` : ''}
+                        ${qAns.checked && isSelected && !isCorrectOption ? `<i data-lucide="x-circle" class="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0"></i>` : ''}
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+
+                    <!-- Action Bar (Submit / Reset Option) -->
+                    <div class="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-100 dark:border-slate-700">
+                        <div>
+                            ${!qAns.checked ? `
+                                <button onclick="checkAnswer(${q.id})" ${qAns.selected.length === 0 ? 'disabled class="px-5 py-2.5 bg-slate-200 dark:bg-slate-700 text-slate-400 rounded-xl font-bold text-xs cursor-not-allowed"' : 'class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold text-xs shadow-md transition flex items-center gap-1.5"'}>
+                                    <i data-lucide="check-square" class="w-4 h-4"></i> Check Answer
+                                </button>
+                            ` : `
+                                <button onclick="clearSingleAnswer(${q.id})" class="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-slate-300 dark:border-slate-600 rounded-xl transition flex items-center gap-1">
+                                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Re-try Question
+                                </button>
+                            `}
+                        </div>
+
+                        <!-- Previous / Next Pagination -->
+                        <div class="flex items-center gap-2">
+                            <button onclick="navigatePrev()" ${state.currentIndex === 0 ? 'disabled' : ''} class="px-3.5 py-2 text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-40 transition flex items-center gap-1">
+                                <i data-lucide="chevron-left" class="w-4 h-4"></i> Prev
+                            </button>
+                            <button onclick="navigateNext()" ${state.currentIndex === dataset.length - 1 ? 'disabled' : ''} class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-white disabled:opacity-40 transition flex items-center gap-1">
+                                Next <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            <!-- Detailed Explanation Card Section -->
+            if (qAns.checked) {
+                html += `
+                    <div class="mt-6 p-5 rounded-2xl bg-amber-50/70 dark:bg-slate-900/80 border border-amber-200/60 dark:border-slate-700/60 animate-fadeIn">
+                        <div class="flex items-center gap-2 mb-2 text-amber-800 dark:text-amber-400 font-bold text-sm">
+                            <i data-lucide="book-open" class="w-4 h-4"></i>
+                            <span>Clinical Explanation & Principles</span>
+                        </div>
+                        <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                            ${q.exp}
+                        </p>
+                        <div class="mt-3 text-xs font-semibold text-slate-500">
+                            Correct Answer(s): <span class="text-emerald-600 dark:text-emerald-400 font-bold">${q.correct.join(', ')}</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            elements.mcqContainer.innerHTML = html;
+            lucide.createIcons();
+        }
+
+        // Global Action Functions bound to window
+        window.toggleOption = function(letter, isMulti, isChecked) {
+            if (isChecked) return; // Locked after submitting
+
+            const dataset = getCurrentDataSet();
+            const q = dataset[state.currentIndex];
+            if (!state.userAnswers[state.currentChapter]) {
+                state.userAnswers[state.currentChapter] = {};
+            }
+
+            let qAns = state.userAnswers[state.currentChapter][q.id] || { selected: [], checked: false };
+
+            if (isMulti) {
+                if (qAns.selected.includes(letter)) {
+                    qAns.selected = qAns.selected.filter(l => l !== letter);
+                } else {
+                    qAns.selected.push(letter);
+                }
+            } else {
+                qAns.selected = [letter];
+            }
+
+            state.userAnswers[state.currentChapter][q.id] = qAns;
+            saveState();
+            renderQuestion();
+        };
+
+        window.checkAnswer = function(qId) {
+            const dataset = getCurrentDataSet();
+            const q = dataset.find(item => item.id === qId);
+            const qAns = state.userAnswers[state.currentChapter][qId];
+
+            if (!qAns || qAns.selected.length === 0) return;
+
+            // Sort arrays for comparison
+            const selectedSorted = [...qAns.selected].sort();
+            const correctSorted = [...q.correct].sort();
+
+            const isCorrect = selectedSorted.length === correctSorted.length && 
+                              selectedSorted.every((val, index) => val === correctSorted[index]);
+
+            qAns.checked = true;
+            qAns.isCorrect = isCorrect;
+
+            state.userAnswers[state.currentChapter][qId] = qAns;
+            saveState();
+            renderAll();
+        };
+
+        window.clearSingleAnswer = function(qId) {
+            if (state.userAnswers[state.currentChapter][qId]) {
+                delete state.userAnswers[state.currentChapter][qId];
+                saveState();
+                renderAll();
+            }
+        };
+
+        window.navigateNext = function() {
+            const dataset = getCurrentDataSet();
+            if (state.currentIndex < dataset.length - 1) {
+                state.currentIndex++;
+                renderAll();
+            }
+        };
+
+        window.navigatePrev = function() {
+            if (state.currentIndex > 0) {
+                state.currentIndex--;
+                renderAll();
+            }
+        };
+
+        // Keyboard Shortcut Navigation Support
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+            if (e.key === 'ArrowRight') {
+                navigateNext();
+            } else if (e.key === 'ArrowLeft') {
+                navigatePrev();
+            }
+        });
+
+        // App Launch Trigger
+        window.onload = initApp;
+    </script>
+</body>
+</html>
